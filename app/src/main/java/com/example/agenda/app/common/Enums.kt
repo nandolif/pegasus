@@ -1,0 +1,37 @@
+package com.example.agenda.app.common
+
+enum class EventType {
+    BIRTHDAY,
+    IMPORTANT,
+    HOLIDAY,
+    REMINDER,
+    OTHER
+}
+
+enum class RECURRENCE {
+    EVERY_N_DAYS,
+    EVERY_N_WEAK,
+    EVERY_N_MONTH_LAST_DAY,
+    EVERY_N_YEARS,
+}
+
+enum class ObserverEvents {
+    CREATE_BANK,
+    CREATE_TRANSACTION,
+    CREATE_EVENT,
+    GET_ALL_BANKS,
+    GET_WEEKS_DATA,
+    GET_WEEK_DATA_FUTURE,
+    GET_WEEK_DATA_PAST,
+    DELETE_BANK,
+    UPDATE_BANK,
+    DELETE_EVENT,
+    GET_LIST_OF_TRANSCATIONS_BY_MONTH_AND_YEAR,
+    GET_ALL_GOALS,
+    CREATE_GOAL,
+    DELETE_TRANSCATION,
+    UPDATE_TRANSACTION,
+    GET_ALL_TRANSACTIONS,
+    DELETE_GOAL,
+    BACKUP,
+}
