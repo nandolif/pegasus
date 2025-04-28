@@ -107,6 +107,20 @@ fun Structure(content: (@Composable () -> Unit)) {
                             contentColor = Theme.Colors.A.color,
                             onClick = {
                                 runBlocking {
+                                    App.UseCases.backup.restore()
+                                }
+                            },
+                        ) {
+                            Icon(
+                                Theme.Icons.Restore.icon,
+                                contentDescription = "Restore",
+                            )
+                        }
+                        FloatingActionButton(
+                            containerColor = Theme.Colors.D.color,
+                            contentColor = Theme.Colors.A.color,
+                            onClick = {
+                                runBlocking {
                                     App.UseCases.backup.execute(Unit)
                                 }
                             },
