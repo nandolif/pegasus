@@ -1,5 +1,6 @@
 package com.example.agenda.ui.screens
 
+import Money
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -44,7 +45,13 @@ fun Goals() {
                                 Navigation.navController.navigate(Navigation.SingleGoalRoute(goal.id!!))
                             }) {
 
-                        TXT("${goal.title}: R$${goal.amount} [Alcançado: ${goal.actualAmount}]")
+                        TXT(
+                            "${goal.title}: ${Money.format(goal.amount)} [Alcançado: ${
+                                Money.format(
+                                    goal.actualAmount!!,
+                                )
+                            }]"
+                        )
                     }
                 }
             }

@@ -1,5 +1,6 @@
 package com.example.agenda.ui.screens
 
+import Money
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -108,7 +109,7 @@ fun CreateTransaction(id: String? = null) {
                 items(banks) {
                     Row {
                         TXT(s = it.name)
-                        TXT(s = it.balance.toString())
+                        TXT(s = Money.format(it.balance))
                         val isSelected = bankId == it.id
                         val text = if (isSelected) "Desmarcar" else "Marcar"
                         val buttonColors = if (isSelected) {
@@ -146,8 +147,8 @@ fun CreateTransaction(id: String? = null) {
                     Row {
                         Column {
                             TXT(s = it.title)
-                            TXT(s = it.amount.toString())
-                            TXT(s = it.actualAmount.toString())
+                            TXT(s = "Valor total: "+Money.format(it.amount))
+                            TXT(s = "Valor adquirido: "+Money.format(it.actualAmount!!))
                         }
                         val isSelected = goalId == it.id
                         val text = if (isSelected) "Desmarcar" else "Marcar"

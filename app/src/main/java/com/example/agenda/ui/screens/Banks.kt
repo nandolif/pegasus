@@ -58,7 +58,7 @@ fun Banks() {
                             .clickable {
                                 Navigation.navController.navigate(Navigation.SingleBankRoute(bank.id!!))
                             }) {
-                        TXT("${bank.name}: R$${bank.balance}")
+                        TXT("${bank.name}: ${Money.format(bank.balance)}")
                     }
                 }
             }

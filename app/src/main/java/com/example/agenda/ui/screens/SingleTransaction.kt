@@ -30,7 +30,7 @@ fun SingleTransaction(id: String) {
 
             Column {
                 TXT(transaction!!.description)
-                TXT(transaction!!.amount.toString())
+                TXT(Money.format(transaction!!.amount))
                 TXT(bank!!.name)
                 if (goal != null) {
                     TXT(goal!!.title)

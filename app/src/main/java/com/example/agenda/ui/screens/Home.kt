@@ -237,14 +237,13 @@ private fun DayItem(days: List<DateObject>, day: DateObject, cellHeight: Dp) {
 private fun TransactionItem(transactions: List<TransactionEntity>) {
     val totalAmount = transactions.sumOf {
         if(it.goalId == null) {
-
             it.amount.toDouble()
         } else {
             -it.amount.toDouble()
 
         }
     }
-    ItemContent(totalAmount.toString(), totalAmount > 0)
+    ItemContent(Money.format(totalAmount.toFloat()), totalAmount > 0)
 }
 
 @Composable

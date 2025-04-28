@@ -46,7 +46,7 @@ fun Item(transaction: TransactionEntity) {
         Navigation.navController.navigate(Navigation.SingleTransactionRoute(transaction.id!!))
     }) {
         TXT(transaction.description)
-        TXT(transaction.amount.toString())
+        TXT(Money.format(transaction.amount))
         TXT(Date.dayMonthYearToString(DayMonthYearObj(transaction.day, transaction.month, transaction.year)))
     }
 }

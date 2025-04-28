@@ -34,8 +34,8 @@ fun SingleGoal(id: String) {
         } else {
             Column {
                 TXT(goal!!.title)
-                TXT(goal!!.amount.toString())
-                TXT(goal!!.actualAmount.toString())
+                TXT(Money.format(goal!!.amount))
+                TXT(Money.format(goal!!.actualAmount!!))
                 BTN(onClick = {
                     runBlocking {
                         App.UseCases.deleteGoal.execute(goal!!)
