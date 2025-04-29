@@ -33,6 +33,7 @@ data class Transaction(
     override val nYears: Int?,
     @Convert(converter = RecurrenceConverter::class, dbType = String::class)
     override val recurrenceType: RECURRENCE?,
+    override val categoryId: String,
 ) : TransactionEntity {
     init {createMetadata()}
 }

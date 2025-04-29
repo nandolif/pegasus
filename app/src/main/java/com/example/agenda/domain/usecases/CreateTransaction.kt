@@ -36,6 +36,7 @@ class CreateTransaction(
             nMonths = input.nMonths,
             nYears = input.nYears,
             recurrenceType = input.recurrenceType,
+            categoryId = input.categoryId,
         )
 
         notifyAll(ObserverEvents.CREATE_TRANSACTION,repository.create(transaction))

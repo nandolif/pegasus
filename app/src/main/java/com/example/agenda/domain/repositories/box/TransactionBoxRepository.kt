@@ -87,4 +87,11 @@ class TransactionBoxRepository(
     override suspend fun getByRecurrenceId(id: String): List<TransactionEntity> {
         return box.all.filter { it.recurrenceId == id }
     }
+
+    override suspend fun deleteByCategory(id: String) {
+        box.all.filter { it.categoryId == id }.forEach {
+            box.remove(it)
+        }
+
+    }
 }

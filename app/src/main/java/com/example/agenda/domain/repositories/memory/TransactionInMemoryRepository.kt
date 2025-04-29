@@ -63,4 +63,8 @@ class TransactionInMemoryRepository: TransactionRepository {
         return transactions.filter { it.recurrenceId == id }
     }
 
+    override suspend fun deleteByCategory(id: String) {
+        transactions.filter { it.categoryId == id }
+    }
+
 }

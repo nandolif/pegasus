@@ -3,6 +3,7 @@ package com.example.agenda.ui
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Backup
+import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Star
@@ -24,6 +25,7 @@ object Theme {
         Event(I.Default.DateRange),
         Bank(I.Default.AccountBalanceWallet),
         Backup(I.Default.Backup),
-        Restore(I.Default.Cloud)
+        Restore(I.Default.Cloud),
+        TransactionCategory(I.Default.Category)
     }
 }

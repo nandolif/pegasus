@@ -10,18 +10,22 @@ import com.example.agenda.app.helps.File
 import com.example.agenda.app.repositories.BankRepository
 import com.example.agenda.app.repositories.EventRepository
 import com.example.agenda.app.repositories.GoalRepository
+import com.example.agenda.app.repositories.TransactionCategoryRepository
 import com.example.agenda.app.repositories.TransactionRepository
 import com.example.agenda.domain.entities.Bank
 import com.example.agenda.domain.entities.Event
 import com.example.agenda.domain.entities.Goal
 import com.example.agenda.domain.entities.Transaction
+import com.example.agenda.domain.entities.TransactionCategory
 
 class Backup(
     private val bankRepository: BankRepository,
     private val eventRepository: EventRepository,
     private val transactionRepository: TransactionRepository,
     private val goalRepository: GoalRepository,
-) : Usecase<Unit, Unit>, Subject<Backup> {
+    private val transactionCategoryRepository: TransactionCategoryRepository,
+
+    ) : Usecase<Unit, Unit>, Subject<Backup> {
     override val observers: MutableList<Observer> = mutableListOf()
     override suspend fun execute(input: Unit) {
         File.deleteFolder(File.Path.BACKUP)
@@ -30,11 +34,24 @@ class Backup(
         val events = eventRepository.getAll()
         val transactions = transactionRepository.getAll()
         val goals = goalRepository.getAll()
+        val transactionCategories = transactionCategoryRepository.getAll()
 
         val bankLines = File.CSV.entityListToString(banks)
         val eventLines = File.CSV.entityListToString(events)
         val transactionLines = File.CSV.entityListToString(transactions)
         val goalLines = File.CSV.entityListToString(goals)
+        val transactionCategoryLines = File.CSV.entityListToString(transactionCategories)
+
+        if (transactionCategoryLines != "") {
+            File.CSV.create(
+                File.CSV.Data(
+                    name = File.Filename.TRANSACTION_CATEGORY_BACKUP.filename,
+                    path = File.Path.BACKUP,
+                    data = transactionCategoryLines
+                )
+            )
+        }
+
 
         if (bankLines != "") {
             File.CSV.create(
@@ -88,16 +105,49 @@ class Backup(
             File.Filename.GOAL_BACKUP.filename,
             File.Path.BACKUP
         )
+        val transactionCategoryFile = File.CSV.read(
+            File.Filename.TRANSACTION_CATEGORY_BACKUP.filename,
+            File.Path.BACKUP
+        )
 
-        if(bankFile == null && eventFile == null && transactionFile == null && goalFile == null){
+        if (
+            bankFile == null
+            && eventFile == null
+            && transactionFile == null
+            && goalFile == null
+            && transactionCategoryFile == null
+            ) {
             return
         }
         deleteAll()
         restoreBank(bankFile)
-        restoreEvent(eventFile)
+        restoreTransactionCategory(transactionCategoryFile)
         restoreTransaction(transactionFile)
+        restoreEvent(eventFile)
         restoreGoal(goalFile)
         File.deleteFolder(File.Path.BACKUP)
+    }
+
+
+    private suspend fun restoreTransactionCategory(file: File.CSV.CSVFile?) {
+        if (file != null) {
+            val id = 0
+            val name = 1
+            val created_at = 2
+            val updated_at = 3
+            for (data in file.data) {
+                val transactionCategory = TransactionCategory(
+                    _id = 0,
+                    id = data[id],
+                    name = data[name],
+                    created_at = data[created_at].toLong(),
+                    updated_at = data[updated_at].toLong(),
+                )
+
+                transactionCategoryRepository.create(transactionCategory)
+            }
+
+        }
     }
 
     private suspend fun restoreEvent(file: File.CSV.CSVFile?) {
@@ -186,6 +236,20 @@ class Backup(
             val nMonths = 18
             val nYears = 19
             val recurrenceType = 20
+            val categoryId = 21
+
+
+            val transactionCategories = transactionCategoryRepository.getAll()
+
+            val transactionCategory = TransactionCategory(
+                id = null,
+                name = "General",
+                created_at = null,
+                updated_at = null
+            )
+            if (transactionCategories.isEmpty()) {
+                transactionCategoryRepository.create(transactionCategory)
+            }
 
             for (data in file.data) {
                 val transaction = Transaction(
@@ -209,7 +273,8 @@ class Backup(
                     nWeeks = data[nWeeks].toIntOrNull(),
                     nMonths = data[nMonths].toIntOrNull(),
                     nYears = data[nYears].toIntOrNull(),
-                    recurrenceType = if (data[recurrenceType] != "null") RECURRENCE.valueOf(data[recurrenceType]) else null
+                    recurrenceType = if (data[recurrenceType] != "null") RECURRENCE.valueOf(data[recurrenceType]) else null,
+                    categoryId = if (transactionCategories.isEmpty()) transactionCategory.id!! else data[categoryId]
                 )
                 transactionRepository.create(transaction)
             }

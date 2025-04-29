@@ -14,4 +14,5 @@ interface TransactionEntity: Entity, RecurrenceEntity, DateEntity{
     val canceledDay: Int?
     val canceledMonth: Int?
     val canceledYear: Int?
+    val categoryId: String
 }

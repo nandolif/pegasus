@@ -41,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -53,6 +54,22 @@ import com.example.agenda.ui.Theme
 import com.example.agenda.ui.system.Navigation
 import com.example.agenda.ui.viewmodels.StructureVM
 import kotlinx.coroutines.runBlocking
+
+
+@Composable
+fun FloatButton(onClick: () -> Unit, icon: ImageVector){
+    FloatingActionButton(
+        containerColor = Theme.Colors.D.color,
+        contentColor = Theme.Colors.A.color,
+        onClick = onClick,
+    ) {
+        Icon(
+            icon,
+            contentDescription = "Floating Button",
+        )
+    }
+
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -102,6 +119,10 @@ fun Structure(content: (@Composable () -> Unit)) {
                     Column(
                         verticalArrangement = Arrangement.spacedBy(distanceFloatingButtons),
                     ) {
+                        FloatButton(onClick = {
+                            Navigation.navController.navigate(TransactionCategories.Screens.AllTransactionCategories.Route())
+                            vm.toggleButtons()
+                        }, icon = Theme.Icons.TransactionCategory.icon)
                         FloatingActionButton(
                             containerColor = Theme.Colors.D.color,
                             contentColor = Theme.Colors.A.color,

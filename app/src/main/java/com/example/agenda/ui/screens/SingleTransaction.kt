@@ -21,7 +21,7 @@ fun SingleTransaction(id: String) {
     val transaction by vm.transaction.collectAsState()
     val bank by vm.bank.collectAsState()
     val goal by vm.goal.collectAsState()
-
+    val category by vm.category.collectAsState()
     Column {
         Header(structureVM)
         if (transaction == null) {
@@ -32,6 +32,7 @@ fun SingleTransaction(id: String) {
                 TXT(transaction!!.description)
                 TXT(Money.format(transaction!!.amount))
                 TXT(bank!!.name)
+                TXT("Categoria: "+category!!.name)
                 if (goal != null) {
                     TXT(goal!!.title)
                 }

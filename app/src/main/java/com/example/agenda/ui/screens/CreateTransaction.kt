@@ -43,12 +43,14 @@ fun CreateTransaction(id: String? = null) {
     var description by remember { mutableStateOf("") }
     var bankId by remember { mutableStateOf("") }
     var goalId by remember { mutableStateOf<String?>(null) }
+    var categoryId by remember { mutableStateOf<String>("") }
     var date by remember { mutableStateOf<DayMonthYearObject?>(null) }
     var isDialogVisible by remember { mutableStateOf(false) }
     val structureVM: StructureVM = viewModel()
     val vm: TransactionsVM = viewModel()
     val banks by vm.banks.collectAsState()
     val goals by vm.goals.collectAsState()
+    val categories by vm.categories.collectAsState()
 
     fun onDismiss() {
         isDialogVisible = !isDialogVisible
@@ -104,6 +106,7 @@ fun CreateTransaction(id: String? = null) {
                     if (date == null) "Selecione uma data" else Date.dayMonthYearToString(date!!)
                 TXT(s = text, color = Theme.Colors.A.color)
             }
+            Spacer(Modifier.height(6.dp))
             TXT(s = "Bancos")
             LazyColumn {
                 items(banks) {
@@ -141,6 +144,7 @@ fun CreateTransaction(id: String? = null) {
                     }
                 }
             }
+            Spacer(Modifier.height(6.dp))
             TXT(s = "Objetivos")
             LazyColumn {
                 items(goals) {
@@ -181,13 +185,52 @@ fun CreateTransaction(id: String? = null) {
                     }
                 }
             }
+            Spacer(Modifier.height(6.dp))
+            TXT(s = "Categorias")
+            LazyColumn {
+                items(categories) {
+                    Row {
+                        Column {
+                            TXT(s = it.name)
+                        }
+                        val isSelected = categoryId == it.id
+                        val text = if (isSelected) "Desmarcar" else "Marcar"
+                        val buttonColors = if (isSelected) {
+                            ButtonColors(
+                                containerColor = Theme.Colors.A.color,
+                                contentColor = Theme.Colors.A.color,
+                                disabledContainerColor = Theme.Colors.A.color,
+                                disabledContentColor = Theme.Colors.A.color,
+                            )
+                        } else {
+                            ButtonColors(
+                                containerColor = Theme.Colors.D.color,
+                                contentColor = Theme.Colors.D.color,
+                                disabledContainerColor = Theme.Colors.D.color,
+                                disabledContentColor = Theme.Colors.D.color,
+                            )
+                        }
+                        val textColor =
+                            if (isSelected) Theme.Colors.D.color else Theme.Colors.A.color
+                        BTN(onClick = {
+                            if (categoryId == it.id) {
+                                categoryId = ""
+                            } else {
+                                categoryId = it.id!!
+                            }
+                        }, buttonColors = buttonColors) {
+                            TXT(s = text, color = textColor)
+                        }
+                    }
+                }
+            }
             Spacer(Modifier.height(16.dp))
             BTN(onClick = {
                 if (date == null) return@BTN
                 if (amount == 0f) return@BTN
                 if (description.isEmpty()) return@BTN
                 if (bankId.isEmpty()) return@BTN
-
+                if(categoryId.isEmpty()) return@BTN
                 if (id == null) {
                     val transaction = Transaction(
                         id = null,
@@ -210,7 +253,8 @@ fun CreateTransaction(id: String? = null) {
                         nWeeks = null,
                         nMonths = null,
                         nYears = null,
-                        recurrenceType = null
+                        recurrenceType = null,
+                        categoryId = categoryId
                     )
                     runBlocking {
                         App.UseCases.createTransaction.execute(transaction)
@@ -240,7 +284,8 @@ fun CreateTransaction(id: String? = null) {
                             nWeeks = transaction.nWeeks,
                             nMonths = transaction.nMonths,
                             nYears = transaction.nYears,
-                            recurrenceType = transaction.recurrenceType
+                            recurrenceType = transaction.recurrenceType,
+                            categoryId = categoryId
                         )
 
                         App.UseCases.updateTransaction.execute(t)

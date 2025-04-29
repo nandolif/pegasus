@@ -50,7 +50,8 @@ object File {
         BANK_BACKUP("bank-backup.csv"),
         EVENT_BACKUP("event-backup.csv"),
         TRANSACTION_BACKUP("transaction-backup.csv"),
-        GOAL_BACKUP("goal-backup"),
+        GOAL_BACKUP("goal-backup.csv"),
+        TRANSACTION_CATEGORY_BACKUP("transaction-category-backup.csv")
     }
 
     enum class Path(val location: String) {

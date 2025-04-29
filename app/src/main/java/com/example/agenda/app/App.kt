@@ -12,10 +12,12 @@ import com.example.agenda.domain.entities.Event
 import com.example.agenda.domain.entities.Goal
 import com.example.agenda.domain.entities.MyObjectBox
 import com.example.agenda.domain.entities.Transaction
+import com.example.agenda.domain.entities.TransactionCategory
 import com.example.agenda.domain.repositories.box.BankBoxRepository
 import com.example.agenda.domain.repositories.box.EventBoxRepository
 import com.example.agenda.domain.repositories.box.GoalBoxRepository
 import com.example.agenda.domain.repositories.box.TransactionBoxRepository
+import com.example.agenda.domain.repositories.box.TransactionCategoryBoxRepository
 import com.example.agenda.domain.repositories.memory.BankInMemoryRepository
 import com.example.agenda.domain.repositories.memory.EventInMemoryRepository
 import com.example.agenda.domain.repositories.memory.GoalInMemoryRepository
@@ -67,6 +69,7 @@ object App {
         val transactionBox: Box<Transaction> = boxStore.boxFor(Transaction::class.java)
         val eventBox: Box<Event> = boxStore.boxFor(Event::class.java)
         val goalBox: Box<Goal> = boxStore.boxFor(Goal::class.java)
+        val transactionCategoryBox: Box<TransactionCategory> = boxStore.boxFor(TransactionCategory::class.java)
     }
 
     object Repositories {
@@ -78,6 +81,8 @@ object App {
             if (Config.DEBUG) EventInMemoryRepository() else EventBoxRepository(Database.eventBox)
         val goalRepository =
             if (Config.DEBUG) GoalInMemoryRepository() else GoalBoxRepository(Database.goalBox)
+        val transactionCategoryRepository =
+            if (Config.DEBUG) TransactionCategoryBoxRepository(Database.transactionCategoryBox) else TransactionCategoryBoxRepository(Database.transactionCategoryBox)
     }
 
     object UseCases {
@@ -85,7 +90,8 @@ object App {
             bankRepository = Repositories.bankRepository,
             eventRepository = Repositories.eventRepository,
             transactionRepository = Repositories.transactionRepository,
-            goalRepository = Repositories.goalRepository
+            goalRepository = Repositories.goalRepository,
+            transactionCategoryRepository = Repositories.transactionCategoryRepository
         ).attach(UI.notify)
 
         val createEvent = CreateEvent(Repositories.eventRepository)
@@ -139,7 +145,6 @@ object App {
         val createTransactionRecurrence =
             CreateRecurrenceTransaction(Repositories.transactionRepository)
     }
-
     @SuppressLint("StaticFieldLeak")
     object UI {
         lateinit var context: Context
