@@ -14,12 +14,44 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 import kotlin.math.abs
 import kotlin.properties.Delegates
 
 
 object Date {
+
+    fun between(start: DayMonthYearObj, end: DayMonthYearObj): String {
+        if(start.day == end.day && start.month == end.month && start.year == end.year){
+            return "Hoje"
+        }
+        val difference = difference(start, end)
+        if(difference < 7){
+            return if(difference != 1) "$difference dias" else "$difference dia"
+        }
+
+        if(difference < 30){
+            val date = (difference/7)
+            return if(date != 1) "${date} semanas" else "${date} semana"
+        }
+
+        if(difference < 365){
+            val date = (difference/30)
+            return if(date != 1) "${date} meses" else "${date} mês"
+        }
+
+        val date = (difference/365)
+        return if(date != 1) "${date} anos" else "${date} ano"
+    }
+
+
+    fun difference(start: DayMonthYearObj, end: DayMonthYearObj): Int {
+        val startDate = LocalDate.of(start.year, start.month, start.day)
+        val endDate   = LocalDate.of(end.year,   end.month,   end.day)
+        return ChronoUnit.DAYS.between(startDate, endDate).toInt()
+    }
+
     fun longToDayMonthYear(
         timestamp: Long,
     ): DayMonthYearObject {
@@ -50,28 +82,6 @@ object Date {
                if(date.month < 10){ "0"+ date.month.toString()} else {date.month.toString()} +
                "/" + date.year.toString()
     }
-//
-//
-//
-//        fun dateToDayMonthYear(date: DATE): DayMonthYearObject {
-//            val list = date.split("/")
-//            val day = list[0].toInt()
-//            val month = list[1].toInt()
-//            val year = list[2].toInt()
-//            return DayMonthYearObj(day, month, year)
-//        }
-//
-//        fun DayMonthYearToDate(
-//            dayMonthYear: DayMonthYearObject,
-//            pattern: PATTERN = "dd/MM/yyyy",
-//            zoneId: ZONE_ID = "GMT"
-//        ): DATE {
-//            return Instant.ofEpochSecond(0)
-//                .atZone(ZoneId.of(zoneId))
-//                .withDayOfMonth(dayMonthYear.day)
-//                .withMonth(dayMonthYear.month)
-//                .withYear(dayMonthYear.year).format(DateTimeFormatter.ofPattern(pattern)).toString()
-//        }
 
     fun getFirstSundayNextToTheFirstDayOfTheMonth(date: DayMonthYearObject): DayMonthYearObject {
         var firstSunday = DayMonthYearObj(day= 1, month = date.month, year = date.year)
