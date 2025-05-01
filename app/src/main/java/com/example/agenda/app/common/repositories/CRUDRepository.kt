@@ -5,5 +5,5 @@ interface CRUDRepository<T> {
     suspend fun update(entity: T)
     suspend fun delete(entity: T): Boolean
     suspend fun getAll(): List<T>
-    suspend fun getById(id: String): T
+    suspend fun getById(id: String): T?
 }

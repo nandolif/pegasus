@@ -38,7 +38,8 @@ import kotlinx.serialization.Serializable
 
 object TransactionCategories {
 
-    const val GOAL_CATEGORY_NAME = "Metas"
+    const val GOAL_CATEGORY_NAME_AND_ID = "Metas"
+    const val OTHERS_CATEGORY_NAME_AND_ID = "Outros"
 
     object Screens {
         object AllTransactionCategories {

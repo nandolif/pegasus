@@ -16,9 +16,9 @@ class GetBank(
 ) : Usecase<String, BankEntity> {
     override suspend fun execute(input: String): BankEntity {
         val bank = bankRepository.getById(input)
-        val transactions = transactionRepository.getByBank(bank)
+        val transactions = transactionRepository.getByBank(bank!!)
 
-        var amount = bank.balance
+        var amount = bank!!.balance
         for (transaction in transactions) {
             if (transaction.ghost) continue
             if (Date.isInFuture(

@@ -12,7 +12,7 @@ class GetGoal(
 ) : Usecase<String, GoalEntity> {
     override suspend fun execute(input: String): GoalEntity {
         val goal = goalRepository.getById(input)
-        val allTransactions = transactionRepository.getByGoal(goal)
+        val allTransactions = transactionRepository.getByGoal(goal!!)
         var actualAmount = 0f
 
         allTransactions.forEach {

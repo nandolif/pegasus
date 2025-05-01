@@ -11,10 +11,10 @@ class DeleteEvent(private val eventRepository: EventRepository) : Usecase<String
     override suspend fun execute(input: String) {
         val event = eventRepository.getById(input)
 
-        if(event.recurrenceType == null && event.recurrenceId != null){
-            val originalEvent = eventRepository.getById(event.recurrenceId!!)
+        if(event!!.recurrenceType == null && event.recurrenceId != null){
+            val originalEvent = eventRepository.getById(event!!.recurrenceId!!)
 
-            val recurrences = eventRepository.getByRecurrenceId(originalEvent.id!!)
+            val recurrences = eventRepository.getByRecurrenceId(originalEvent!!.id!!)
 
             for (recurrence in recurrences) {
                 eventRepository.delete(recurrence)
@@ -29,7 +29,7 @@ class DeleteEvent(private val eventRepository: EventRepository) : Usecase<String
                 eventRepository.delete(recurrence)
             }
         }
-        eventRepository.delete(event)
+        eventRepository.delete(event!!)
         notifyAll(ObserverEvents.DELETE_EVENT, Unit)
     }
 

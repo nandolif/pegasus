@@ -8,6 +8,6 @@ class GetTransaction(
     private val transactionRepository: TransactionRepository,
 ) : Usecase<String, TransactionEntity> {
     override suspend fun execute(input: String): TransactionEntity {
-        return transactionRepository.getById(input)
+        return transactionRepository.getById(input)!!
     }
 }

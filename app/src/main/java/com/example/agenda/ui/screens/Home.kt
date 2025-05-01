@@ -183,6 +183,7 @@ private fun DayItem(days: List<DateObject>, day: DateObject, cellHeight: Dp) {
         ) {
 
 
+            val horizontalPadding = if (isToday && day.date.day < 10) 4.dp else 2.dp
             Text(
                 text = day.date.day.toString(),
                 color = if (isToday) Theme.Colors.A.color else Theme.Colors.D.color,
@@ -193,7 +194,7 @@ private fun DayItem(days: List<DateObject>, day: DateObject, cellHeight: Dp) {
                         Theme.Colors.D.color,
                         CircleShape
                     )
-                    .padding(2.dp)
+                    .padding(vertical = 2.dp, horizontal = horizontalPadding)
                 else Modifier.padding(2.dp)
 
             )

@@ -18,6 +18,7 @@ import com.example.agenda.domain.entities.Event
 import com.example.agenda.domain.entities.Goal
 import com.example.agenda.domain.entities.Transaction
 import com.example.agenda.domain.entities.TransactionCategory
+import com.example.agenda.ui.screens.TransactionCategories
 
 class Backup(
     private val bankRepository: BankRepository,
@@ -242,19 +243,9 @@ class Backup(
             val categoryId = 22
 
 
-            val transactionCategories = transactionCategoryRepository.getAll()
-
-            val transactionCategory = TransactionCategory(
-                id = null,
-                name = "General",
-                created_at = null,
-                updated_at = null
-            )
-            if (transactionCategories.isEmpty()) {
-                transactionCategoryRepository.create(transactionCategory)
-            }
 
             for (data in file.data) {
+                val categoryIdData = data.getOrNull(categoryId)
                 val transaction = Transaction(
                     id = data[id],
                     day = data[day].toInt(),
@@ -277,7 +268,7 @@ class Backup(
                     nMonths = data[nMonths].toIntOrNull(),
                     nYears = data[nYears].toIntOrNull(),
                     recurrenceType = if (data[recurrenceType] != "null") RECURRENCE.valueOf(data[recurrenceType]) else null,
-                    categoryId = if (transactionCategories.isEmpty()) transactionCategory.id!! else data.getOrNull(categoryId).toString()
+                    categoryId = if(categoryIdData == null || categoryIdData == "null") TransactionCategories.OTHERS_CATEGORY_NAME_AND_ID  else categoryIdData
                 )
                 transactionRepository.create(transaction)
             }

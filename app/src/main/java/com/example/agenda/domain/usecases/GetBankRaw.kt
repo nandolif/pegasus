@@ -8,6 +8,6 @@ class GetBankRaw(
     private val bankRepository: BankRepository,
 ) : Usecase<String, BankEntity> {
     override suspend fun execute(input: String): BankEntity {
-        return bankRepository.getById(input)
+        return bankRepository.getById(input)!!
     }
 }
