@@ -38,6 +38,7 @@ import kotlinx.serialization.Serializable
 
 object TransactionCategories {
 
+    const val GOAL_CATEGORY_NAME = "Metas"
 
     object Screens {
         object AllTransactionCategories {

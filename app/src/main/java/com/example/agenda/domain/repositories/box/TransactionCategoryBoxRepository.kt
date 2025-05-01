@@ -10,6 +10,10 @@ import io.objectbox.Box
 class TransactionCategoryBoxRepository(
     val box: Box<TransactionCategory>,
 ) : TransactionCategoryRepository {
+    override suspend fun getByName(name: String): TransactionCategoryEntity? {
+        return box.all.firstOrNull { it.name == name}
+    }
+
     override suspend fun create(entity: TransactionCategoryEntity) {
         box.put(entity as TransactionCategory)
     }

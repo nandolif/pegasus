@@ -262,7 +262,6 @@ fun CreateTransaction(id: String? = null) {
                     }
                 } else {
                     runBlocking {
-
                         val transaction = App.UseCases.getTransaction.execute(id)
                         val t = Transaction(
                             id = transaction.id,
