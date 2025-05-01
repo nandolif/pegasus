@@ -24,6 +24,4 @@ class CreateGoal(
         )
         notifyAll(ObserverEvents.CREATE_GOAL,goalRepository.create(goal))
     }
-
-
 }

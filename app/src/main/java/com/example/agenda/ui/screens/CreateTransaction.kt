@@ -69,6 +69,7 @@ fun CreateTransaction(id: String? = null) {
             description = transaction.description
             date = DayMonthYearObj(transaction.day, transaction.month, transaction.year)
             bankId = transaction.bankId
+            categoryId = transaction.categoryId
             if (transaction.goalId != null) {
                 goalId = transaction.goalId!!
             }

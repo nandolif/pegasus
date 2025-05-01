@@ -1,5 +1,6 @@
 package com.example.agenda.domain.usecases
 
+import com.example.agenda.app.App
 import com.example.agenda.app.common.EventType
 import com.example.agenda.app.common.ObserverEvents
 import com.example.agenda.app.common.RECURRENCE
@@ -96,19 +97,21 @@ class Backup(
 
     suspend fun restore() {
         val bankFile = File.CSV.read(File.Filename.BANK_BACKUP.filename, File.Path.BACKUP)
+            .also { it ?: App.UI.notify.add("Não há bank para restaurar") }
         val eventFile = File.CSV.read(File.Filename.EVENT_BACKUP.filename, File.Path.BACKUP)
+            .also { it ?: App.UI.notify.add("Não há event para restaurar") }
         val transactionFile = File.CSV.read(
             File.Filename.TRANSACTION_BACKUP.filename,
             File.Path.BACKUP
-        )
+        ).also { it ?: App.UI.notify.add("Não há transaction para restaurar") }
         val goalFile = File.CSV.read(
             File.Filename.GOAL_BACKUP.filename,
             File.Path.BACKUP
-        )
+        ).also { it ?: App.UI.notify.add("Não há goal para restaurar") }
         val transactionCategoryFile = File.CSV.read(
             File.Filename.TRANSACTION_CATEGORY_BACKUP.filename,
             File.Path.BACKUP
-        )
+        ).also { it ?: App.UI.notify.add("Não há transactionCategory para restaurar") }
 
         if (
             bankFile == null
@@ -116,7 +119,7 @@ class Backup(
             && transactionFile == null
             && goalFile == null
             && transactionCategoryFile == null
-            ) {
+        ) {
             return
         }
         deleteAll()
@@ -131,13 +134,13 @@ class Backup(
 
     private suspend fun restoreTransactionCategory(file: File.CSV.CSVFile?) {
         if (file != null) {
-            val id = 0
-            val name = 1
-            val created_at = 2
-            val updated_at = 3
+            val _id = 0
+            val id = 1
+            val name = 2
+            val created_at = 3
+            val updated_at = 4
             for (data in file.data) {
                 val transactionCategory = TransactionCategory(
-                    _id = 0,
                     id = data[id],
                     name = data[name],
                     created_at = data[created_at].toLong(),
@@ -217,26 +220,26 @@ class Backup(
             val _id = 0
             val id = 1
             val day = 2
-            val month = 2
-            val year = 3
-            val amount = 4
-            val description = 5
-            val created_at = 6
-            val updated_at = 7
-            val bankId = 8
-            val recurrenceId = 9
-            val ghost = 10
-            val goalId = 11
-            val canceled = 12
-            val canceledDay = 13
-            val canceledMonth = 14
-            val canceledYear = 15
-            val nDays = 16
-            val nWeeks = 17
-            val nMonths = 18
-            val nYears = 19
-            val recurrenceType = 20
-            val categoryId = 21
+            val month = 3
+            val year = 4
+            val amount = 5
+            val description = 6
+            val created_at = 7
+            val updated_at = 8
+            val bankId = 9
+            val recurrenceId = 10
+            val ghost = 11
+            val goalId = 12
+            val canceled = 13
+            val canceledDay = 14
+            val canceledMonth = 15
+            val canceledYear = 16
+            val nDays = 17
+            val nWeeks = 18
+            val nMonths = 19
+            val nYears = 20
+            val recurrenceType = 21
+            val categoryId = 22
 
 
             val transactionCategories = transactionCategoryRepository.getAll()
@@ -274,7 +277,7 @@ class Backup(
                     nMonths = data[nMonths].toIntOrNull(),
                     nYears = data[nYears].toIntOrNull(),
                     recurrenceType = if (data[recurrenceType] != "null") RECURRENCE.valueOf(data[recurrenceType]) else null,
-                    categoryId = if (transactionCategories.isEmpty()) transactionCategory.id!! else data[categoryId]
+                    categoryId = if (transactionCategories.isEmpty()) transactionCategory.id!! else data.getOrNull(categoryId).toString()
                 )
                 transactionRepository.create(transaction)
             }

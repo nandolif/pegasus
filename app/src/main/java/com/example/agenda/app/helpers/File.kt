@@ -2,6 +2,7 @@ package com.example.agenda.app.helps
 
 import android.content.ContentUris
 import android.content.ContentValues
+import android.media.MediaScannerConnection
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
@@ -10,34 +11,6 @@ import com.example.agenda.ui.screens.Banks
 import io.objectbox.annotation.Entity
 
 object File {
-    private fun queryFileId(
-        fileName: String,
-        relativePath: String
-    ): Long? {
-        val projection = arrayOf(
-            MediaStore.MediaColumns._ID,
-            MediaStore.MediaColumns.DISPLAY_NAME,
-            MediaStore.MediaColumns.RELATIVE_PATH
-        )
-        val selection = "${MediaStore.MediaColumns.RELATIVE_PATH} = ? AND " +
-                "${MediaStore.MediaColumns.DISPLAY_NAME} = ?"
-        val selectionArgs = arrayOf(relativePath, fileName)
-
-        // 3. Query the Downloads collection
-        App.UI.context.contentResolver.query(
-            MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY),
-            projection,
-            selection,
-            selectionArgs,
-            null
-        )?.use { cursor ->
-            if (cursor.moveToFirst()) {
-                val idIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
-                return cursor.getLong(idIndex)
-            }
-        }
-        return null
-    }
     fun resolvePath(path: List<String>): String {
         return path.joinToString(separator = "/") + "/"
     }
@@ -66,18 +39,6 @@ object File {
         val path: Path,
         val data: String,
     )
-    fun folderExists(relativePath: Path): Boolean {
-        val uri = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-        val projection = arrayOf(MediaStore.MediaColumns._ID)
-        val selection = "${MediaStore.MediaColumns.RELATIVE_PATH} = ?"
-        val selectionArgs = arrayOf(relativePath.location)
-        App.UI.context.contentResolver.query(
-            uri, projection, selection, selectionArgs, null
-        )?.use { cursor ->
-            return cursor.count > 0
-        }
-        return false
-    }
     fun deleteFolder(relativePath: Path): Int {
         val uri = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
         val selection = "${MediaStore.MediaColumns.RELATIVE_PATH} = ?"
@@ -85,16 +46,21 @@ object File {
         val deleted = App.UI.context.contentResolver.delete(uri, selection, selectionArgs)
         return deleted
     }
-    fun read(filename: String, path: Path): String? {
-        val id = queryFileId(filename, path.location) ?: return null
-        val contentUri = ContentUris.withAppendedId(
-            MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY),
-            id
+    fun read(filename: String): String? {
+        val uri = MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL)
+        val projection = arrayOf(
+            MediaStore.MediaColumns._ID,
         )
-
-        // 2. Open an InputStream for the URI
-        App.UI.context.contentResolver.openInputStream(contentUri)?.use { inputStream ->
-            return inputStream.bufferedReader().readText()
+        val selection = "${MediaStore.MediaColumns.DISPLAY_NAME} = ?"
+        val selectionArgs = arrayOf(filename)
+        App.UI.context.contentResolver.query(uri, projection, selection, selectionArgs, null)?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                val id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID))
+                val contentUri = ContentUris.withAppendedId(uri, id)
+                return App.UI.context.contentResolver.openInputStream(contentUri)
+                    ?.bufferedReader()
+                    ?.readText()
+            }
         }
         return null
     }
@@ -107,7 +73,7 @@ object File {
             put(MediaStore.MediaColumns.IS_PENDING, 1)
         }
         val uri = App.UI.context.contentResolver.insert(
-            MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY), values
+            MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY), values
         )
 
         uri?.let {
@@ -173,7 +139,7 @@ object File {
             val data: List<List<String>>,
         )
         fun read(filename: String, path: Path): CSVFile?{
-            val file = File.read(filename, path) ?: return null
+            val file = File.read(filename) ?: return null
             val list = file.split("\n")
             return CSVFile(
                 header = list[0].split(","),

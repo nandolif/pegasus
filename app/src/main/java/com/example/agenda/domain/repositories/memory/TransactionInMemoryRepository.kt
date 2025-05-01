@@ -16,8 +16,6 @@ class TransactionInMemoryRepository: TransactionRepository {
     override suspend fun update(entity: TransactionEntity) {
         val t  = transactions.first { it.id == entity.id }
         transactions[transactions.indexOf(t)] = entity
-
-
     }
 
     override suspend fun delete(entity: TransactionEntity): Boolean {

@@ -55,6 +55,12 @@ class Notify() : Observer {
         mNotificationManager.notify(1, mBuilder.build())
     }
 
+    fun add(message: String): Unit? {
+        messages.value = messages.value.plus(message)
+        println(message)
+        return null
+    }
+
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override suspend fun update(event: ObserverEvents, value: Any) {
         when (event) {

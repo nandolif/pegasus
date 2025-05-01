@@ -60,6 +60,7 @@ class TransactionBoxRepository(
                 canceledMonth = entity.canceledMonth,
                 canceledDay = entity.canceledDay,
                 canceled = entity.canceled,
+                categoryId = entity.categoryId,
                 updated_at = App.Time.now()
             ))
         }
