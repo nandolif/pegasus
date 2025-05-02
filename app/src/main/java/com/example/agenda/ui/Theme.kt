@@ -1,6 +1,7 @@
 package com.example.agenda.ui
 
 import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.AssignmentLate
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Category
@@ -26,6 +27,7 @@ object Theme {
         Bank(I.Default.AccountBalanceWallet),
         Backup(I.Default.Backup),
         Restore(I.Default.Cloud),
-        TransactionCategory(I.Default.Category)
+        TransactionCategory(I.Default.Category),
+        EventCategory(I.Default.AssignmentLate)
     }
 }

@@ -9,4 +9,5 @@ import com.example.agenda.app.common.RecurrenceEntity
 interface EventEntity: Entity, RecurrenceEntity, DateEntity{
     val description: String
     val eventType: EventType
+    val categoryId: String
 }

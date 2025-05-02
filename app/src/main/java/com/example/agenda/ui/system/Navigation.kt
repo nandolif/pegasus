@@ -15,6 +15,7 @@ import com.example.agenda.ui.screens.CreateBank
 import com.example.agenda.ui.screens.CreateEvent
 import com.example.agenda.ui.screens.CreateGoal
 import com.example.agenda.ui.screens.CreateTransaction
+import com.example.agenda.ui.screens.EventCategories
 import com.example.agenda.ui.screens.Goals
 import com.example.agenda.ui.screens.Home
 import com.example.agenda.ui.screens.SingleBank
@@ -132,6 +133,13 @@ object Navigation {
                     { TransactionCategories.Screens.CreateTransactionCategory.Screen(args<TransactionCategories.Screens.CreateTransactionCategory.Route>(it)) }
                     composable<TransactionCategories.Screens.SingleTransactionCategory.Route>
                     {TransactionCategories.Screens.SingleTransactionCategory.Screen(args<TransactionCategories.Screens.SingleTransactionCategory.Route>(it))}
+
+                    composable<EventCategories.Screens.AllEventCategories.Route>
+                    { EventCategories.Screens.AllEventCategories.Screen() }
+                    composable<EventCategories.Screens.CreateEventCategory.Route>
+                    { EventCategories.Screens.CreateEventCategory.Screen(args<EventCategories.Screens.CreateEventCategory.Route>(it)) }
+                    composable<EventCategories.Screens.SingleEventCategory.Route>
+                    { EventCategories.Screens.SingleEventCategory.Screen(args<EventCategories.Screens.SingleEventCategory.Route>(it)) }
 
                     composable<CreateBankRoute> {
                         val args = it.toRoute<CreateBankRoute>()

@@ -31,12 +31,12 @@ enum class BTNType {
 
 @Composable
 fun BTN(
+    text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     type: BTNType = BTNType.PRIMARY,
     containerColor: Color = Theme.Colors.D.color,
     textColor: Color = Theme.Colors.A.color,
-    text: String,
 ) {
     // altura fixa para os dois
     val btnHeight =  48.dp // ex. 48.dp

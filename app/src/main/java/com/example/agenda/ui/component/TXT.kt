@@ -8,6 +8,6 @@ import androidx.compose.ui.unit.sp
 import com.example.agenda.ui.Theme
 
 @Composable
-fun TXT(s: String, fs: Int = 16, color: Color = Theme.Colors.D.color, maxLines: Int = Int.MAX_VALUE){
+fun TXT(s: String,color: Color = Theme.Colors.D.color, fs: Int = 16,  maxLines: Int = Int.MAX_VALUE){
     Text(text=s, color = color, fontSize = fs.sp, maxLines = maxLines)
 }

@@ -9,16 +9,19 @@ import com.example.agenda.app.common.observer.Observer
 import com.example.agenda.app.common.observer.Subject
 import com.example.agenda.app.helps.File
 import com.example.agenda.app.repositories.BankRepository
+import com.example.agenda.app.repositories.EventCategoryRepository
 import com.example.agenda.app.repositories.EventRepository
 import com.example.agenda.app.repositories.GoalRepository
 import com.example.agenda.app.repositories.TransactionCategoryRepository
 import com.example.agenda.app.repositories.TransactionRepository
 import com.example.agenda.domain.entities.Bank
 import com.example.agenda.domain.entities.Event
+import com.example.agenda.domain.entities.EventCategory
 import com.example.agenda.domain.entities.Goal
 import com.example.agenda.domain.entities.Transaction
 import com.example.agenda.domain.entities.TransactionCategory
 import com.example.agenda.ui.Theme
+import com.example.agenda.ui.screens.EventCategories
 import com.example.agenda.ui.screens.TransactionCategories
 
 class Backup(
@@ -27,6 +30,7 @@ class Backup(
     private val transactionRepository: TransactionRepository,
     private val goalRepository: GoalRepository,
     private val transactionCategoryRepository: TransactionCategoryRepository,
+    private val eventCategoryRepository: EventCategoryRepository,
 
     ) : Usecase<Unit, Unit>, Subject<Backup> {
     override val observers: MutableList<Observer> = mutableListOf()
@@ -38,12 +42,13 @@ class Backup(
         val transactions = transactionRepository.getAll()
         val goals = goalRepository.getAll()
         val transactionCategories = transactionCategoryRepository.getAll()
-
+        val eventCategories = eventCategoryRepository.getAll()
         val bankLines = File.CSV.entityListToString(banks)
         val eventLines = File.CSV.entityListToString(events)
         val transactionLines = File.CSV.entityListToString(transactions)
         val goalLines = File.CSV.entityListToString(goals)
         val transactionCategoryLines = File.CSV.entityListToString(transactionCategories)
+        val eventCategoryLines = File.CSV.entityListToString(eventCategories)
 
         if (transactionCategoryLines != "") {
             File.CSV.create(
@@ -67,7 +72,6 @@ class Backup(
         }
 
         if (eventLines != "") {
-
             File.CSV.create(
                 File.CSV.Data(
                     name = File.Filename.EVENT_BACKUP.filename,
@@ -94,6 +98,17 @@ class Backup(
                 )
             )
         }
+
+        if (eventCategoryLines != "") {
+            File.CSV.create(
+                File.CSV.Data(
+                    name = File.Filename.EVENT_CATEGORY_BACKUP.filename,
+                    path = File.Path.BACKUP,
+                    data = eventCategoryLines
+                )
+            )
+        }
+
         notifyAll(ObserverEvents.BACKUP, Unit)
     }
 
@@ -115,12 +130,18 @@ class Backup(
             File.Path.BACKUP
         ).also { it ?: App.UI.notify.add("Não há transactionCategory para restaurar") }
 
+        val eventCategoryFile = File.CSV.read(
+            File.Filename.EVENT_CATEGORY_BACKUP.filename,
+            File.Path.BACKUP
+        ).also { it ?: App.UI.notify.add("Não há eventCategory para restaurar") }
+
         if (
             bankFile == null
             && eventFile == null
             && transactionFile == null
             && goalFile == null
             && transactionCategoryFile == null
+            && eventCategoryFile == null
         ) {
             return
         }
@@ -128,11 +149,35 @@ class Backup(
         restoreBank(bankFile)
         restoreTransactionCategory(transactionCategoryFile)
         restoreTransaction(transactionFile)
+        restoreEventCategory(eventCategoryFile)
         restoreEvent(eventFile)
         restoreGoal(goalFile)
         File.deleteFolder(File.Path.BACKUP)
     }
 
+    private suspend fun restoreEventCategory(file: File.CSV.CSVFile?) {
+        if (file != null) {
+            val _id =  0
+            val id = 1
+            val created_at = 2
+            val updated_at = 3
+            val name = 4
+            val textColor = 5
+            val backgroundColor = 6
+
+            for (data in file.data) {
+                val eventCategory = EventCategory(
+                    id = data[id],
+                    created_at = data[created_at].toLong(),
+                    updated_at = data[updated_at].toLong(),
+                    name = data[name],
+                    textColor = data[textColor],
+                    backgroundColor = data[backgroundColor]
+                )
+                eventCategoryRepository.create(eventCategory)
+            }
+        }
+    }
 
     private suspend fun restoreTransactionCategory(file: File.CSV.CSVFile?) {
         if (file != null) {
@@ -176,6 +221,7 @@ class Backup(
             val nYears = 12
             val recurrenceId = 13
             val eventType = 14
+            val categoryId = 15
             for (data in file.data) {
                 val event = Event(
                     day = data[day].toInt(),
@@ -191,7 +237,8 @@ class Backup(
                     nMonths = data[nMonths].toIntOrNull(),
                     nYears = data[nYears].toIntOrNull(),
                     recurrenceId = if (data[recurrenceId] != "null") data[recurrenceId] else null,
-                    eventType = EventType.valueOf(data[eventType])
+                    eventType = EventType.valueOf(data[eventType]),
+                    categoryId = data.getOrNull(categoryId) ?: EventCategories.Default.Others.NAME_AND_ID
                 )
                 eventRepository.create(event)
             }

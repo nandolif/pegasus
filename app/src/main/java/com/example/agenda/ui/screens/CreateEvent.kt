@@ -1,5 +1,6 @@
 package com.example.agenda.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -10,38 +11,65 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.agenda.app.App
 import com.example.agenda.app.common.EventType
 import com.example.agenda.app.common.RECURRENCE
+import com.example.agenda.app.entities.EventCategoryEntity
 import com.example.agenda.app.helps.Date
 import com.example.agenda.domain.entities.Event
 import com.example.agenda.domain.objects.DayMonthYearObj
 import com.example.agenda.ui.Theme
 import com.example.agenda.ui.component.BTN
+import com.example.agenda.ui.component.BTNType
 import com.example.agenda.ui.component.DateDialog
 import com.example.agenda.ui.component.EDM
 import com.example.agenda.ui.component.OTF
 import com.example.agenda.ui.component.TXT
 import com.example.agenda.ui.system.Navigation
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
+
+
+class VM: ViewModel(){
+    val eventCategories = MutableStateFlow(mutableListOf<EventCategoryEntity>())
+
+    init {
+        runBlocking {
+            eventCategories.value = App.Repositories.eventCategoryRepository.getAll().toMutableList()
+        }
+    }
+
+}
+
 
 @Composable
 fun CreateEvent(eventDate: String?) {
-
     var description by remember { mutableStateOf("") }
     var isOpen by remember { mutableStateOf(false) }
+    var categoryId by remember { mutableStateOf("") }
+    val vm: VM = viewModel()
+    val eventCategories by vm.eventCategories.collectAsState()
+
+
     var date by remember {
         mutableStateOf(
             if (eventDate != null) {
@@ -73,7 +101,7 @@ fun CreateEvent(eventDate: String?) {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        TXT("Criar Evento", 32)
+        TXT("Criar Evento")
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -152,10 +180,29 @@ fun CreateEvent(eventDate: String?) {
         }
         Spacer(modifier = Modifier.height(16.dp))
 
+        LazyColumn {
+            items(eventCategories) {
+                Column {
+                    Box(
+                        Modifier.background(Color(it.backgroundColor.toULong()))
+                    ) {
+                        TXT(it.name, Color(it.textColor.toULong()))
+                    }
+                    BTN(if(categoryId == it.id) "Desmarcar" else "Marcar", onClick = {
+                        categoryId = it.id!!
+                    },type = if(categoryId == it.id) BTNType.SECONDARY else BTNType.PRIMARY)
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
+
         BTN(onClick = {
             if (date == null) return@BTN
             if (description.isEmpty()) return@BTN
             if (select2 != null && quantity == 0) return@BTN
+            if (categoryId == "") return@BTN
 
             runBlocking {
                 App.UseCases.createEvent.execute(
@@ -173,7 +220,8 @@ fun CreateEvent(eventDate: String?) {
                         nMonths = if (select2 == RECURRENCE.EVERY_N_MONTH_LAST_DAY) quantity else null,
                         nYears = if (select2 == RECURRENCE.EVERY_N_YEARS) quantity else null,
                         recurrenceId = null,
-                        eventType = select
+                        eventType = select,
+                        categoryId = categoryId,
                     )
                 )
             }

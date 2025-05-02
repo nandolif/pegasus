@@ -17,7 +17,8 @@ class MainActivity : ComponentActivity() {
             App.UI.notify.NotifyComponent()
             Navigation.Host()
             LaunchedEffect(Unit) {
-            App.Repositories.transactionCategoryRepository.setup()
+                App.Repositories.transactionCategoryRepository.setup()
+                App.Repositories.eventCategoryRepository.setup()
             }
         }
     }

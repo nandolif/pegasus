@@ -119,6 +119,12 @@ fun Structure(content: (@Composable () -> Unit)) {
                     Column(
                         verticalArrangement = Arrangement.spacedBy(distanceFloatingButtons),
                     ) {
+
+                        FloatButton(onClick = {
+                            Navigation.navController.navigate(EventCategories.Screens.AllEventCategories.Route())
+                            vm.toggleButtons()
+                        }, icon = Theme.Icons.EventCategory.icon)
+
                         FloatButton(onClick = {
                             Navigation.navController.navigate(TransactionCategories.Screens.AllTransactionCategories.Route())
                             vm.toggleButtons()

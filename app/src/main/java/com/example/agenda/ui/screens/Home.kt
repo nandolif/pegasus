@@ -31,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -146,6 +147,8 @@ private fun DayItem(days: List<DateObject>, day: DateObject, cellHeight: Dp) {
     val isWeekend = (days.indexOf(day) + 1) % 7 == 0 || (days.indexOf(day) + 2) % 7 == 0
     val isToday =
         App.Time.today.day == day.date.day && App.Time.today.month == day.date.month && App.Time.today.year == day.date.year
+    val vm: HomeVM = viewModel()
+    val eventCategories by vm.eventCategories.collectAsState()
     Box(
         modifier = Modifier
             .height(cellHeight)
@@ -162,7 +165,13 @@ private fun DayItem(days: List<DateObject>, day: DateObject, cellHeight: Dp) {
             ) {
 
                 if (day.events.isNotEmpty()) {
-                    Navigation.navController.navigate(Navigation.SingleDayRoute(day.date.day, day.date.month, day.date.year))
+                    Navigation.navController.navigate(
+                        Navigation.SingleDayRoute(
+                            day.date.day,
+                            day.date.month,
+                            day.date.year
+                        )
+                    )
                 } else {
                     Navigation.navController.navigate(
                         Navigation.CreateEventRoute(
@@ -212,13 +221,26 @@ private fun DayItem(days: List<DateObject>, day: DateObject, cellHeight: Dp) {
             }
             if (day.events.isNotEmpty()) {
                 if (day.events.size > availableSpace) {
-
                     for (i in 0..<availableSpace) {
-                        ItemContent(day.events[i].description)
+                        val eventCategory =
+                            eventCategories.first { it.id == day.events[i].categoryId }
+                        ItemContent(
+                            day.events[i].description,
+                            highlight = true,
+                            backgroundColor = Color(eventCategory.backgroundColor.toULong()),
+                            textColor = Color(eventCategory.textColor.toULong())
+                        )
                     }
                 } else {
                     for (i in 0..<day.events.size) {
-                        ItemContent(day.events[i].description)
+                        val eventCategory =
+                            eventCategories.first { it.id == day.events[i].categoryId }
+                        ItemContent(
+                            day.events[i].description,
+                            highlight = true,
+                            backgroundColor = Color(eventCategory.backgroundColor.toULong()),
+                            textColor = Color(eventCategory.textColor.toULong())
+                        )
                     }
                 }
 
@@ -237,7 +259,7 @@ private fun DayItem(days: List<DateObject>, day: DateObject, cellHeight: Dp) {
 @Composable
 private fun TransactionItem(transactions: List<TransactionEntity>) {
     val totalAmount = transactions.sumOf {
-        if(it.goalId == null) {
+        if (it.goalId == null) {
             it.amount.toDouble()
         } else {
             -it.amount.toDouble()
@@ -248,12 +270,17 @@ private fun TransactionItem(transactions: List<TransactionEntity>) {
 }
 
 @Composable
-private fun ItemContent(text: String, highlight: Boolean = false) {
+private fun ItemContent(
+    text: String,
+    highlight: Boolean = false,
+    backgroundColor: Color = Theme.Colors.D.color,
+    textColor: Color = Theme.Colors.A.color,
+) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .background(
-                if (!highlight) Theme.Colors.A.color else Theme.Colors.D.color,
+                if (highlight) backgroundColor else textColor,
                 RoundedCornerShape(4.dp)
             )
             .fillMaxWidth()
@@ -265,7 +292,7 @@ private fun ItemContent(text: String, highlight: Boolean = false) {
             s = text,
             maxLines = 1,
             fs = 8,
-            color = if (!highlight) Theme.Colors.D.color else Theme.Colors.A.color
+            color = if (highlight) textColor else backgroundColor
         )
     }
     Spacer(modifier = Modifier.height(2.dp))

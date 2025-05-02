@@ -9,12 +9,14 @@ import com.example.agenda.app.helps.Date
 import com.example.agenda.app.objects.DayMonthYearObject
 import com.example.agenda.domain.entities.Bank
 import com.example.agenda.domain.entities.Event
+import com.example.agenda.domain.entities.EventCategory
 import com.example.agenda.domain.entities.Goal
 import com.example.agenda.domain.entities.MyObjectBox
 import com.example.agenda.domain.entities.Transaction
 import com.example.agenda.domain.entities.TransactionCategory
 import com.example.agenda.domain.repositories.box.BankBoxRepository
 import com.example.agenda.domain.repositories.box.EventBoxRepository
+import com.example.agenda.domain.repositories.box.EventCategoryBoxRepository
 import com.example.agenda.domain.repositories.box.GoalBoxRepository
 import com.example.agenda.domain.repositories.box.TransactionBoxRepository
 import com.example.agenda.domain.repositories.box.TransactionCategoryBoxRepository
@@ -70,6 +72,7 @@ object App {
         val eventBox: Box<Event> = boxStore.boxFor(Event::class.java)
         val goalBox: Box<Goal> = boxStore.boxFor(Goal::class.java)
         val transactionCategoryBox: Box<TransactionCategory> = boxStore.boxFor(TransactionCategory::class.java)
+        val eventCategoryBox: Box<EventCategory> = boxStore.boxFor(EventCategory::class.java)
     }
 
     object Repositories {
@@ -83,6 +86,7 @@ object App {
             if (Config.DEBUG) GoalInMemoryRepository() else GoalBoxRepository(Database.goalBox)
         val transactionCategoryRepository =
             if (Config.DEBUG) TransactionCategoryBoxRepository(Database.transactionCategoryBox) else TransactionCategoryBoxRepository(Database.transactionCategoryBox)
+        val eventCategoryRepository = if(Config.DEBUG) EventCategoryBoxRepository(Database.eventCategoryBox) else EventCategoryBoxRepository(Database.eventCategoryBox)
     }
 
     object UseCases {
@@ -91,7 +95,8 @@ object App {
             eventRepository = Repositories.eventRepository,
             transactionRepository = Repositories.transactionRepository,
             goalRepository = Repositories.goalRepository,
-            transactionCategoryRepository = Repositories.transactionCategoryRepository
+            transactionCategoryRepository = Repositories.transactionCategoryRepository,
+            eventCategoryRepository = Repositories.eventCategoryRepository,
         ).attach(UI.notify)
 
         val createEvent = CreateEvent(Repositories.eventRepository)

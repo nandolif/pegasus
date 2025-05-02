@@ -48,7 +48,8 @@ class CreateRecurrenceEvent(
                     nMonths = null,
                     nYears = null,
                     recurrenceId = event.id,
-                    eventType = event.eventType
+                    eventType = event.eventType,
+                    categoryId = event.categoryId
                 )
             )
 

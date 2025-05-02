@@ -24,7 +24,8 @@ object File {
         EVENT_BACKUP("event-backup.csv"),
         TRANSACTION_BACKUP("transaction-backup.csv"),
         GOAL_BACKUP("goal-backup.csv"),
-        TRANSACTION_CATEGORY_BACKUP("transaction-category-backup.csv")
+        TRANSACTION_CATEGORY_BACKUP("transaction-category-backup.csv"),
+        EVENT_CATEGORY_BACKUP("event-category-backup.csv")
     }
 
     enum class Path(val location: String) {

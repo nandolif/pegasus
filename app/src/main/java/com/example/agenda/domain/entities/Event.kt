@@ -30,6 +30,7 @@ data class Event(
     override val recurrenceId: String?,
     @Convert(converter = EventTypeConverter::class, dbType = String::class)
     override val eventType: EventType,
+    override val categoryId: String,
 ) : EventEntity {
     init {
         createMetadata()
