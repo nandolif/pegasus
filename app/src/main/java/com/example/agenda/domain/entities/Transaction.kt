@@ -38,7 +38,7 @@ data class Transaction(
 ) : TransactionEntity {
     init {
         createMetadata()
-        if(goalId != null) categoryId = TransactionCategories.GOAL_CATEGORY_NAME_AND_ID
+        if(goalId != null) categoryId = TransactionCategories.Default.Goal.NAME_AND_ID
     }
 }
 

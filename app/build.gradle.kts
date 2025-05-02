@@ -42,6 +42,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.colorpicker.compose)
+
     implementation(libs.androidx.core.splashscreen)
 
     implementation(libs.navigation.compose)

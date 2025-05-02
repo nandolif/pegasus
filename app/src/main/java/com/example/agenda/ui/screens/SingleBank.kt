@@ -14,9 +14,7 @@ fun SingleBank(id: String) {
     Column {
         BTN(onClick = {
             Navigation.navController.navigate(Navigation.CreateBankRoute(id))
-        }) {
-            TXT(s="Atualizar",color = Theme.Colors.A.color)
-        }
+        }, text= "Atualizar")
 
         BTN(onClick = {
             runBlocking {
@@ -24,7 +22,7 @@ fun SingleBank(id: String) {
                 App.UseCases.deleteBank.execute(bank)
                 Navigation.navController.navigate(Navigation.BanksRoute())
             }
-        }) { TXT(s="Delete",color = Theme.Colors.A.color) }
+        }, text= "Deletar")
     }
 
 }

@@ -41,7 +41,7 @@ fun SingleGoal(id: String) {
                         App.UseCases.deleteGoal.execute(goal!!)
                     }
                     Navigation.navController.navigate(Navigation.GoalsRoute())
-                }) { TXT(s = "Deletar", color = Theme.Colors.A.color) }
+                }, text="Deletar")
             }
             Spacer(Modifier.height(16.dp))
             LazyColumn {

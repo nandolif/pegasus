@@ -42,15 +42,11 @@ fun SingleTransaction(id: String) {
                         App.UseCases.deleteTransaction.execute(transaction!!)
                     }
                     Navigation.navController.navigate(Navigation.TransactionsRoute())
-                }) {
-                    TXT(s = "Deletar", color = Theme.Colors.A.color)
-                }
+                },text="Deletar")
 
                 BTN(onClick = {
                     Navigation.navController.navigate(Navigation.CreateTransactionRoute(transaction!!.id!!))
-                }) {
-                    TXT(s = "Atualizar", color = Theme.Colors.A.color)
-                }
+                }, text="Atualizar")
 
             }
         }

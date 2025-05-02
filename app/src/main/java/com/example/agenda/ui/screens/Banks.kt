@@ -44,7 +44,7 @@ fun Banks() {
         if (data.isEmpty()) {
             BTN(onClick = {
                 Navigation.navController.navigate(Navigation.CreateBankRoute())
-            }) { TXT(s = "Criar Banco", color = Theme.Colors.A.color) }
+            }, text = "Criar banco")
         } else {
 
             LazyColumn(Modifier.fillMaxSize()) {

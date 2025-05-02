@@ -37,54 +37,54 @@ fun DateDialog(
         MaterialTheme(
             colorScheme = darkColorScheme(
                 // Accent & primary surfaces
-                primary                   = Theme.Colors.D.color,
-                onPrimary                 = Theme.Colors.A.color,
-                primaryContainer          = Theme.Colors.C.color,
-                onPrimaryContainer        = Theme.Colors.A.color,
-                inversePrimary            = Theme.Colors.C.color,
+                primary = Theme.Colors.D.color,
+                onPrimary = Theme.Colors.A.color,
+                primaryContainer = Theme.Colors.C.color,
+                onPrimaryContainer = Theme.Colors.A.color,
+                inversePrimary = Theme.Colors.C.color,
 
                 // Secondary accents
-                secondary                 = Theme.Colors.C.color,
-                onSecondary               = Theme.Colors.A.color,
-                secondaryContainer        = Theme.Colors.B.color,
-                onSecondaryContainer      = Theme.Colors.D.color,
+                secondary = Theme.Colors.C.color,
+                onSecondary = Theme.Colors.A.color,
+                secondaryContainer = Theme.Colors.B.color,
+                onSecondaryContainer = Theme.Colors.D.color,
 
                 // Tertiary accents
-                tertiary                  = Theme.Colors.C.color,
-                onTertiary                = Theme.Colors.A.color,
-                tertiaryContainer         = Theme.Colors.B.color,
-                onTertiaryContainer       = Theme.Colors.D.color,
+                tertiary = Theme.Colors.C.color,
+                onTertiary = Theme.Colors.A.color,
+                tertiaryContainer = Theme.Colors.B.color,
+                onTertiaryContainer = Theme.Colors.D.color,
 
                 // Core backgrounds & surfaces
-                background                = Theme.Colors.A.color,
-                onBackground              = Theme.Colors.D.color,
-                surface                   = Theme.Colors.A.color,
-                onSurface                 = Theme.Colors.D.color,
-                surfaceVariant            = Theme.Colors.B.color,
-                onSurfaceVariant          = Theme.Colors.C.color,
+                background = Theme.Colors.A.color,
+                onBackground = Theme.Colors.D.color,
+                surface = Theme.Colors.A.color,
+                onSurface = Theme.Colors.D.color,
+                surfaceVariant = Theme.Colors.B.color,
+                onSurfaceVariant = Theme.Colors.C.color,
 
                 // Surface tint & inverses
-                surfaceTint               = Theme.Colors.C.color,
-                inverseSurface            = Theme.Colors.D.color,
-                inverseOnSurface          = Theme.Colors.A.color,
+                surfaceTint = Theme.Colors.C.color,
+                inverseSurface = Theme.Colors.D.color,
+                inverseOnSurface = Theme.Colors.A.color,
 
                 // Error slots
-                error                     = Theme.Colors.C.color,
-                onError                   = Theme.Colors.A.color,
-                errorContainer            = Theme.Colors.B.color,
-                onErrorContainer          = Theme.Colors.D.color,
+                error = Theme.Colors.C.color,
+                onError = Theme.Colors.A.color,
+                errorContainer = Theme.Colors.B.color,
+                onErrorContainer = Theme.Colors.D.color,
 
                 // Miscellaneous
-                outline                   = Theme.Colors.C.color,
-                outlineVariant            = Theme.Colors.B.color,
-                scrim                     = Theme.Colors.A.color,
-                surfaceBright             = Theme.Colors.C.color,
-                surfaceContainer          = Theme.Colors.B.color,
-                surfaceContainerHigh      = Theme.Colors.B.color,
-                surfaceContainerHighest   = Theme.Colors.C.color,
-                surfaceContainerLow       = Theme.Colors.A.color,
-                surfaceContainerLowest    = Theme.Colors.B.color,
-                surfaceDim                = Theme.Colors.B.color
+                outline = Theme.Colors.C.color,
+                outlineVariant = Theme.Colors.B.color,
+                scrim = Theme.Colors.A.color,
+                surfaceBright = Theme.Colors.C.color,
+                surfaceContainer = Theme.Colors.B.color,
+                surfaceContainerHigh = Theme.Colors.B.color,
+                surfaceContainerHighest = Theme.Colors.C.color,
+                surfaceContainerLow = Theme.Colors.A.color,
+                surfaceContainerLowest = Theme.Colors.B.color,
+                surfaceDim = Theme.Colors.B.color
             ),
             content = {
                 DatePickerDialog(
@@ -93,18 +93,14 @@ fun DateDialog(
                     confirmButton = {
                         BTN(onClick = {
                             onAccept(dateState.selectedDateMillis ?: System.currentTimeMillis())
-                        }) {
-                            TXT("Confirmar", color = Theme.Colors.A.color)
-                        }
+                        }, text = "Confirmar")
                     },
                     dismissButton = {
                         BTN(onClick = {
                             onDismiss()
-                        }) {
-                            TXT(s = "Cancelar", color = Theme.Colors.A.color)
-                        }
+                        }, text = "Cancelar")
                     },
-                    colors =  DatePickerDefaults.colors(
+                    colors = DatePickerDefaults.colors(
                         containerColor = Theme.Colors.A.color,
                         titleContentColor = Theme.Colors.D.color,
                         headlineContentColor = Theme.Colors.D.color,
@@ -131,63 +127,63 @@ fun DateDialog(
                         dividerColor = Theme.Colors.C.color,
                         dateTextFieldColors = TextFieldColors(
                             // Text colors
-                            focusedTextColor                 = Theme.Colors.D.color,
-                            unfocusedTextColor               = Theme.Colors.D.color,
-                            disabledTextColor                = Theme.Colors.D.color,
-                            errorTextColor                   = Theme.Colors.D.color,
+                            focusedTextColor = Theme.Colors.D.color,
+                            unfocusedTextColor = Theme.Colors.D.color,
+                            disabledTextColor = Theme.Colors.D.color,
+                            errorTextColor = Theme.Colors.D.color,
                             // Container/background
-                            focusedContainerColor            = Theme.Colors.B.color,
-                            unfocusedContainerColor          = Theme.Colors.A.color,
-                            disabledContainerColor           = Theme.Colors.A.color,
-                            errorContainerColor              = Theme.Colors.A.color,
+                            focusedContainerColor = Theme.Colors.B.color,
+                            unfocusedContainerColor = Theme.Colors.A.color,
+                            disabledContainerColor = Theme.Colors.A.color,
+                            errorContainerColor = Theme.Colors.A.color,
                             // Cursor
-                            cursorColor                      = Theme.Colors.D.color,
-                            errorCursorColor                 = Theme.Colors.D.color,
+                            cursorColor = Theme.Colors.D.color,
+                            errorCursorColor = Theme.Colors.D.color,
                             // Selection
-                            textSelectionColors              = TextSelectionColors(
-                                handleColor    = Theme.Colors.D.color,
-                                backgroundColor= Theme.Colors.C.color
+                            textSelectionColors = TextSelectionColors(
+                                handleColor = Theme.Colors.D.color,
+                                backgroundColor = Theme.Colors.C.color
                             ),
                             // Indicators (underline)
-                            focusedIndicatorColor            = Theme.Colors.D.color,
-                            unfocusedIndicatorColor          = Theme.Colors.C.color,
-                            disabledIndicatorColor           = Theme.Colors.B.color,
-                            errorIndicatorColor              = Theme.Colors.D.color,
+                            focusedIndicatorColor = Theme.Colors.D.color,
+                            unfocusedIndicatorColor = Theme.Colors.C.color,
+                            disabledIndicatorColor = Theme.Colors.B.color,
+                            errorIndicatorColor = Theme.Colors.D.color,
                             // Leading icon
-                            focusedLeadingIconColor          = Theme.Colors.D.color,
-                            unfocusedLeadingIconColor        = Theme.Colors.C.color,
-                            disabledLeadingIconColor         = Theme.Colors.B.color,
-                            errorLeadingIconColor            = Theme.Colors.D.color,
+                            focusedLeadingIconColor = Theme.Colors.D.color,
+                            unfocusedLeadingIconColor = Theme.Colors.C.color,
+                            disabledLeadingIconColor = Theme.Colors.B.color,
+                            errorLeadingIconColor = Theme.Colors.D.color,
                             // Trailing icon
-                            focusedTrailingIconColor         = Theme.Colors.D.color,
-                            unfocusedTrailingIconColor       = Theme.Colors.C.color,
-                            disabledTrailingIconColor        = Theme.Colors.B.color,
-                            errorTrailingIconColor           = Theme.Colors.D.color,
+                            focusedTrailingIconColor = Theme.Colors.D.color,
+                            unfocusedTrailingIconColor = Theme.Colors.C.color,
+                            disabledTrailingIconColor = Theme.Colors.B.color,
+                            errorTrailingIconColor = Theme.Colors.D.color,
                             // Label
-                            focusedLabelColor                = Theme.Colors.D.color,
-                            unfocusedLabelColor              = Theme.Colors.C.color,
-                            disabledLabelColor               = Theme.Colors.B.color,
-                            errorLabelColor                  = Theme.Colors.D.color,
+                            focusedLabelColor = Theme.Colors.D.color,
+                            unfocusedLabelColor = Theme.Colors.C.color,
+                            disabledLabelColor = Theme.Colors.B.color,
+                            errorLabelColor = Theme.Colors.D.color,
                             // Placeholder
-                            focusedPlaceholderColor          = Theme.Colors.C.color,
-                            unfocusedPlaceholderColor        = Theme.Colors.C.color,
-                            disabledPlaceholderColor         = Theme.Colors.B.color,
-                            errorPlaceholderColor            = Theme.Colors.D.color,
+                            focusedPlaceholderColor = Theme.Colors.C.color,
+                            unfocusedPlaceholderColor = Theme.Colors.C.color,
+                            disabledPlaceholderColor = Theme.Colors.B.color,
+                            errorPlaceholderColor = Theme.Colors.D.color,
                             // Supporting text
-                            focusedSupportingTextColor       = Theme.Colors.D.color,
-                            unfocusedSupportingTextColor     = Theme.Colors.C.color,
-                            disabledSupportingTextColor      = Theme.Colors.B.color,
-                            errorSupportingTextColor         = Theme.Colors.D.color,
+                            focusedSupportingTextColor = Theme.Colors.D.color,
+                            unfocusedSupportingTextColor = Theme.Colors.C.color,
+                            disabledSupportingTextColor = Theme.Colors.B.color,
+                            errorSupportingTextColor = Theme.Colors.D.color,
                             // Prefix
-                            focusedPrefixColor               = Theme.Colors.D.color,
-                            unfocusedPrefixColor             = Theme.Colors.C.color,
-                            disabledPrefixColor              = Theme.Colors.B.color,
-                            errorPrefixColor                 = Theme.Colors.D.color,
+                            focusedPrefixColor = Theme.Colors.D.color,
+                            unfocusedPrefixColor = Theme.Colors.C.color,
+                            disabledPrefixColor = Theme.Colors.B.color,
+                            errorPrefixColor = Theme.Colors.D.color,
                             // Suffix
-                            focusedSuffixColor               = Theme.Colors.D.color,
-                            unfocusedSuffixColor             = Theme.Colors.C.color,
-                            disabledSuffixColor              = Theme.Colors.B.color,
-                            errorSuffixColor                 = Theme.Colors.D.color
+                            focusedSuffixColor = Theme.Colors.D.color,
+                            unfocusedSuffixColor = Theme.Colors.C.color,
+                            disabledSuffixColor = Theme.Colors.B.color,
+                            errorSuffixColor = Theme.Colors.D.color
                         )
                     )
                 ) {

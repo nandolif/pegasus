@@ -18,6 +18,7 @@ import com.example.agenda.domain.entities.Event
 import com.example.agenda.domain.entities.Goal
 import com.example.agenda.domain.entities.Transaction
 import com.example.agenda.domain.entities.TransactionCategory
+import com.example.agenda.ui.Theme
 import com.example.agenda.ui.screens.TransactionCategories
 
 class Backup(
@@ -140,12 +141,16 @@ class Backup(
             val name = 2
             val created_at = 3
             val updated_at = 4
+            val textColor = 5
+            val backgroundColor =6
             for (data in file.data) {
                 val transactionCategory = TransactionCategory(
                     id = data[id],
                     name = data[name],
                     created_at = data[created_at].toLong(),
                     updated_at = data[updated_at].toLong(),
+                    textColor = data.getOrNull(textColor) ?: Theme.Colors.A.color.value.toString(),
+                    backgroundColor = data.getOrNull(backgroundColor)?: Theme.Colors.A.color.value.toString(),
                 )
 
                 transactionCategoryRepository.create(transactionCategory)
@@ -268,7 +273,7 @@ class Backup(
                     nMonths = data[nMonths].toIntOrNull(),
                     nYears = data[nYears].toIntOrNull(),
                     recurrenceType = if (data[recurrenceType] != "null") RECURRENCE.valueOf(data[recurrenceType]) else null,
-                    categoryId = if(categoryIdData == null || categoryIdData == "null") TransactionCategories.OTHERS_CATEGORY_NAME_AND_ID  else categoryIdData
+                    categoryId = if(categoryIdData == null || categoryIdData == "null") TransactionCategories.Default.Others.NAME_AND_ID  else categoryIdData
                 )
                 transactionRepository.create(transaction)
             }

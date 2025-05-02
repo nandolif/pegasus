@@ -88,8 +88,6 @@ fun CreateBank(id: String? = null) {
                 }
                 Navigation.navController.navigate(Navigation.BanksRoute())
             }
-        }) {
-            TXT("Salvar", color = Theme.Colors.A.color)
-        }
+        }, text = "Salvar")
     }
 }

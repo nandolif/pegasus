@@ -9,18 +9,28 @@ import kotlinx.coroutines.runBlocking
 
 interface TransactionCategoryRepository : CRUDRepository<TransactionCategoryEntity> {
     fun setup() {
-        _setup(TransactionCategories.GOAL_CATEGORY_NAME_AND_ID)
-        _setup(TransactionCategories.OTHERS_CATEGORY_NAME_AND_ID)
+        _setup(
+            TransactionCategories.Default.Goal.NAME_AND_ID,
+            backgroundColor = TransactionCategories.Default.Goal.BACKGROUND_COLOR,
+            textColor = TransactionCategories.Default.Goal.TEXT_COLOR
+        )
+        _setup(
+            TransactionCategories.Default.Others.NAME_AND_ID,
+            backgroundColor = TransactionCategories.Default.Others.BACKGROUND_COLOR,
+            textColor = TransactionCategories.Default.Others.TEXT_COLOR
+        )
     }
 
-    private fun _setup(id: String) {
+    private fun _setup(id: String, backgroundColor: String, textColor: String) {
         runBlocking {
             if (getById(id) == null) {
                 create(
                     TransactionCategory(
                         id = id, name = id,
                         created_at = null,
-                        updated_at = null
+                        updated_at = null,
+                        textColor = textColor,
+                        backgroundColor = backgroundColor
                     )
                 )
             }

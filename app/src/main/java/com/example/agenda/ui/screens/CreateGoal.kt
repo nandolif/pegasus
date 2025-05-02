@@ -67,9 +67,7 @@ fun CreateGoal(vm: GoalsVM = viewModel()) {
                     )
                 }
                 Navigation.navController.navigate(Navigation.GoalsRoute())
-            }) {
-                TXT(s = "Salvar", color = Theme.Colors.A.color)
-            }
+            },text = "Salvar")
         }
     }
 }

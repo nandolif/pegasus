@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -27,6 +28,7 @@ import com.example.agenda.app.entities.TransactionCategoryEntity
 import com.example.agenda.domain.entities.TransactionCategory
 import com.example.agenda.ui.Theme
 import com.example.agenda.ui.component.BTN
+import com.example.agenda.ui.component.ColorPicker
 import com.example.agenda.ui.component.OTF
 import com.example.agenda.ui.component.TXT
 import com.example.agenda.ui.system.Navigation
@@ -38,8 +40,20 @@ import kotlinx.serialization.Serializable
 
 object TransactionCategories {
 
-    const val GOAL_CATEGORY_NAME_AND_ID = "Metas"
-    const val OTHERS_CATEGORY_NAME_AND_ID = "Outros"
+
+    object Default {
+        object Goal {
+            const val NAME_AND_ID = "Metas"
+            val BACKGROUND_COLOR = Theme.Colors.D.color.value.toString()
+            val TEXT_COLOR = Theme.Colors.A.color.value.toString()
+        }
+
+        object Others {
+            const val NAME_AND_ID = "Outros"
+            val BACKGROUND_COLOR = Theme.Colors.D.color.value.toString()
+            val TEXT_COLOR = Theme.Colors.A.color.value.toString()
+        }
+    }
 
     object Screens {
         object AllTransactionCategories {
@@ -68,15 +82,13 @@ object TransactionCategories {
                     BTN(
                         onClick = {
                             Navigation.navController.navigate(CreateTransactionCategory.Route())
-                        }
-                    ) {
-                        TXT("Criar Categoria", color = Theme.Colors.A.color)
-                    }
+                        }, text = "Criar Categoria"
+                    )
                     LazyColumn {
                         items(transactionCategories) {
                             Box(
                                 modifier = Modifier
-                                    .background(Theme.Colors.B.color)
+                                    .background(Color(it.backgroundColor.toULong()))
                                     .padding(4.dp)
                                     .clickable {
                                         Navigation.navController.navigate(
@@ -86,7 +98,7 @@ object TransactionCategories {
                                         )
                                     }
                             ) {
-                                TXT(it.name)
+                                TXT(it.name, color = Color(it.textColor.toULong()))
                             }
                             Spacer(Modifier.height(8.dp))
                         }
@@ -95,6 +107,7 @@ object TransactionCategories {
                 }
             }
         }
+
         object CreateTransactionCategory {
             @Serializable
             data class Route(val id: String? = null)
@@ -103,6 +116,10 @@ object TransactionCategories {
             fun Screen(args: Route) {
                 val structureVM: StructureVM = viewModel()
                 var name by remember { mutableStateOf("") }
+                val textColor = remember { mutableStateOf(Theme.Colors.A.color.value.toString()) }
+                val backgroundColor = remember { mutableStateOf(Theme.Colors.B.color.value.toString()) }
+                var isColorPickerVisible by remember { mutableStateOf(false) }
+
 
                 var transactionCategory by remember {
                     mutableStateOf<TransactionCategoryEntity?>(
@@ -116,9 +133,13 @@ object TransactionCategories {
                                 App.Repositories.transactionCategoryRepository.getById(args.id)
 
                             name = transactionCategory!!.name
+                            textColor.value = transactionCategory!!.textColor
+                            backgroundColor.value = transactionCategory!!.backgroundColor
                         }
                     }
                 }
+
+                if (isColorPickerVisible) ColorPicker.Component({isColorPickerVisible = false},backgroundColor, textColor)
                 App.UI.title = "Criar Categoria de Transação"
                 Column {
                     Header(structureVM)
@@ -127,6 +148,12 @@ object TransactionCategories {
                         label = "Nome",
                         value = name,
                         onValueChange = { name = it }
+                    )
+                    BTN(
+                        onClick = { isColorPickerVisible = !isColorPickerVisible },
+                        text = "Selecionar Cor",
+                        containerColor = Color(backgroundColor.value.toULong()),
+                        textColor = Color(textColor.value.toULong())
                     )
                     if (transactionCategory == null) {
                         BTN(
@@ -137,17 +164,17 @@ object TransactionCategories {
                                         id = null,
                                         name = name,
                                         created_at = null,
-                                        updated_at = null
+                                        updated_at = null,
+                                        textColor = textColor.value,
+                                        backgroundColor = backgroundColor.value
                                     )
                                     App.Repositories.transactionCategoryRepository.create(
                                         t
                                     )
                                 }
                                 Navigation.navController.navigate(AllTransactionCategories.Route())
-                            }
-                        ) {
-                            TXT(s = "Salvar", color = Theme.Colors.A.color)
-                        }
+                            }, text = "Salvar"
+                        )
                     } else {
                         BTN(
                             onClick = {
@@ -157,23 +184,24 @@ object TransactionCategories {
                                         id = transactionCategory!!.id,
                                         name = name,
                                         created_at = transactionCategory!!.created_at,
-                                        updated_at = App.Time.now()
+                                        updated_at = App.Time.now(),
+                                        textColor = textColor.value,
+                                        backgroundColor = backgroundColor.value
                                     )
                                     App.Repositories.transactionCategoryRepository.update(
                                         newTransactionCategory
                                     )
                                 }
                                 Navigation.navController.navigate(AllTransactionCategories.Route())
-                            }
-                        ) {
-                            TXT(s = "Atualizar", color = Theme.Colors.A.color)
-                        }
+                            }, text = "Atualizar"
+                        )
                     }
 
                 }
             }
 
         }
+
         object SingleTransactionCategory {
             @Serializable
             data class Route(val id: String)
@@ -201,8 +229,13 @@ object TransactionCategories {
 
                     Header(structureVM)
                     Column {
-                        TXT(s = "Nome: ${transactionCategory?.name}")
+                        Box(Modifier.background(color = Color(transactionCategory?.backgroundColor!!.toULong()))) {
 
+                            TXT(
+                                s = "Nome: ${transactionCategory?.name}",
+                                color = Color(transactionCategory?.textColor!!.toULong())
+                            )
+                        }
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
@@ -225,10 +258,7 @@ object TransactionCategories {
                                         args.id
                                     )
                                 )
-                            }) {
-                                TXT("Atualizar", color = Theme.Colors.A.color)
-
-                            }
+                            }, text = "Atualizar")
                         }
                     }
                 }

@@ -19,7 +19,9 @@ class TransactionCategoryBoxRepository(
         box.all.first { it.id == entity.id }.let {
             box.put(it.copy(
                 name = entity.name,
-                updated_at = App.Time.now()
+                updated_at = App.Time.now(),
+                textColor = entity.textColor,
+                backgroundColor = entity.backgroundColor
             ))
         }
     }

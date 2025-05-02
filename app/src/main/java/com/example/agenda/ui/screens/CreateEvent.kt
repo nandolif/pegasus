@@ -185,6 +185,6 @@ fun CreateEvent(eventDate: String?) {
 //            select2 = null
 //            quantity = 7
             Navigation.navController.navigate(Navigation.HomeRoute())
-        }) { TXT(s = "Salvar", color = Theme.Colors.A.color) }
+        }, text = "Salvar")
     }
 }

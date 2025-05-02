@@ -36,7 +36,7 @@ fun SingleDay(day: Int, month: Int, year: Int) {
                             App.UseCases.deleteEvent.execute(it.id!!)
                         }
                         Navigation.navController.navigate(Navigation.HomeRoute())
-                    }) { TXT(s = "Deletar", color = Theme.Colors.A.color) }
+                    }, text = "Deletar")
                 }
             }
         }
@@ -48,9 +48,7 @@ fun SingleDay(day: Int, month: Int, year: Int) {
                     )
                 )
             )
-        }) {
-            TXT(s= "Criar Evento nesta data", color = Theme.Colors.A.color)
-        }
+        }, text = "Criar Evento nesta data")
     }
 
 }

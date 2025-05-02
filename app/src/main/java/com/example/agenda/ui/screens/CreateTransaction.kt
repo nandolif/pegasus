@@ -29,6 +29,7 @@ import com.example.agenda.domain.entities.Transaction
 import com.example.agenda.domain.objects.DayMonthYearObj
 import com.example.agenda.ui.Theme
 import com.example.agenda.ui.component.BTN
+import com.example.agenda.ui.component.BTNCollors
 import com.example.agenda.ui.component.DateDialog
 import com.example.agenda.ui.component.OTF
 import com.example.agenda.ui.component.TXT
@@ -100,13 +101,12 @@ fun CreateTransaction(id: String? = null) {
                 label = "Valor",
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
+            val text =
+                if (date == null) "Selecione uma data" else Date.dayMonthYearToString(date!!)
             BTN(onClick = {
                 isDialogVisible = !isDialogVisible
-            }) {
-                val text =
-                    if (date == null) "Selecione uma data" else Date.dayMonthYearToString(date!!)
-                TXT(s = text, color = Theme.Colors.A.color)
-            }
+            }, text = text)
+
             Spacer(Modifier.height(6.dp))
             TXT(s = "Bancos")
             LazyColumn {
@@ -117,31 +117,28 @@ fun CreateTransaction(id: String? = null) {
                         val isSelected = bankId == it.id
                         val text = if (isSelected) "Desmarcar" else "Marcar"
                         val buttonColors = if (isSelected) {
-                            ButtonColors(
+                            BTNCollors(
                                 containerColor = Theme.Colors.A.color,
-                                contentColor = Theme.Colors.A.color,
-                                disabledContainerColor = Theme.Colors.A.color,
-                                disabledContentColor = Theme.Colors.A.color,
                             )
                         } else {
-                            ButtonColors(
+                            BTNCollors(
                                 containerColor = Theme.Colors.D.color,
-                                contentColor = Theme.Colors.D.color,
-                                disabledContainerColor = Theme.Colors.D.color,
-                                disabledContentColor = Theme.Colors.D.color,
                             )
                         }
                         val textColor =
                             if (isSelected) Theme.Colors.D.color else Theme.Colors.A.color
-                        BTN(onClick = {
-                            if (bankId == it.id) {
-                                bankId = ""
-                            } else {
-                                bankId = it.id!!
-                            }
-                        }, buttonColors = buttonColors) {
-                            TXT(s = text, color = textColor)
-                        }
+                        BTN(
+                            onClick = {
+                                if (bankId == it.id) {
+                                    bankId = ""
+                                } else {
+                                    bankId = it.id!!
+                                }
+                            },
+                            containerColor = Theme.Colors.D.color,
+                            textColor = textColor,
+                            text = text
+                        )
                     }
                 }
             }
@@ -152,25 +149,16 @@ fun CreateTransaction(id: String? = null) {
                     Row {
                         Column {
                             TXT(s = it.title)
-                            TXT(s = "Valor total: "+Money.format(it.amount))
-                            TXT(s = "Valor adquirido: "+Money.format(it.actualAmount!!))
+                            TXT(s = "Valor total: " + Money.format(it.amount))
+                            TXT(s = "Valor adquirido: " + Money.format(it.actualAmount!!))
                         }
                         val isSelected = goalId == it.id
                         val text = if (isSelected) "Desmarcar" else "Marcar"
                         val buttonColors = if (isSelected) {
-                            ButtonColors(
-                                containerColor = Theme.Colors.A.color,
-                                contentColor = Theme.Colors.A.color,
-                                disabledContainerColor = Theme.Colors.A.color,
-                                disabledContentColor = Theme.Colors.A.color,
-                            )
+                            Theme.Colors.A.color
+
                         } else {
-                            ButtonColors(
-                                containerColor = Theme.Colors.D.color,
-                                contentColor = Theme.Colors.D.color,
-                                disabledContainerColor = Theme.Colors.D.color,
-                                disabledContentColor = Theme.Colors.D.color,
-                            )
+                            Theme.Colors.D.color
                         }
                         val textColor =
                             if (isSelected) Theme.Colors.D.color else Theme.Colors.A.color
@@ -180,9 +168,7 @@ fun CreateTransaction(id: String? = null) {
                             } else {
                                 goalId = it.id!!
                             }
-                        }, buttonColors = buttonColors) {
-                            TXT(s = text, color = textColor)
-                        }
+                        }, containerColor = buttonColors, text = text, textColor = textColor)
                     }
                 }
             }
@@ -197,19 +183,9 @@ fun CreateTransaction(id: String? = null) {
                         val isSelected = categoryId == it.id
                         val text = if (isSelected) "Desmarcar" else "Marcar"
                         val buttonColors = if (isSelected) {
-                            ButtonColors(
-                                containerColor = Theme.Colors.A.color,
-                                contentColor = Theme.Colors.A.color,
-                                disabledContainerColor = Theme.Colors.A.color,
-                                disabledContentColor = Theme.Colors.A.color,
-                            )
+                            Theme.Colors.A.color
                         } else {
-                            ButtonColors(
-                                containerColor = Theme.Colors.D.color,
-                                contentColor = Theme.Colors.D.color,
-                                disabledContainerColor = Theme.Colors.D.color,
-                                disabledContentColor = Theme.Colors.D.color,
-                            )
+                            Theme.Colors.D.color
                         }
                         val textColor =
                             if (isSelected) Theme.Colors.D.color else Theme.Colors.A.color
@@ -219,9 +195,7 @@ fun CreateTransaction(id: String? = null) {
                             } else {
                                 categoryId = it.id!!
                             }
-                        }, buttonColors = buttonColors) {
-                            TXT(s = text, color = textColor)
-                        }
+                        }, containerColor = buttonColors, text = text, textColor = textColor)
                     }
                 }
             }
@@ -231,7 +205,7 @@ fun CreateTransaction(id: String? = null) {
                 if (amount == 0f) return@BTN
                 if (description.isEmpty()) return@BTN
                 if (bankId.isEmpty()) return@BTN
-                if(categoryId.isEmpty()) return@BTN
+                if (categoryId.isEmpty()) return@BTN
                 if (id == null) {
                     val transaction = Transaction(
                         id = null,
@@ -292,9 +266,7 @@ fun CreateTransaction(id: String? = null) {
                     }
                 }
                 Navigation.navController.navigate(Navigation.TransactionsRoute())
-            }) {
-                TXT(s = "Salvar", color = Theme.Colors.A.color)
-            }
+            }, text = "Salvar")
         }
     }
 }
