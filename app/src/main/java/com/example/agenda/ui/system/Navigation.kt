@@ -118,7 +118,7 @@ object Navigation {
                         SingleDay(args.day, args.month, args.year)
                     }
                     composable<TransactionsRoute> {
-                        Transactions()
+                        //Transactions()
                     }
                     composable<CreateTransactionRoute> {
                         val args = it.toRoute<CreateTransactionRoute>()

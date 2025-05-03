@@ -46,7 +46,7 @@ fun SingleGoal(id: String) {
             Spacer(Modifier.height(16.dp))
             LazyColumn {
                 items(transactions) {
-                    Item(it)
+                    //Item(it)
                     Spacer(Modifier.height(16.dp))
                 }
 
