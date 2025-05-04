@@ -190,9 +190,8 @@ fun Structure(content: (@Composable () -> Unit)) {
                             containerColor = Theme.Colors.D.color,
                             contentColor = Theme.Colors.A.color,
                             onClick = {
-                                Navigation.navController.navigate(Navigation.CreateTransactionRoute())
+                                Navigation.navController.navigate(Transactions.Screens.CreateTransaction.Route())
                                 vm.toggleButtons()
-
                             },
 
                             ) {
@@ -324,7 +323,7 @@ fun Header(
 
 
                     IconButton(onClick = {
-                        Navigation.navController.navigate(Navigation.TransactionsRoute())
+                        Navigation.navController.navigate(Transactions.Screens.MonthlyTransactions.Route())
                     }) {
                         Icon(
                             Theme.Icons.Transaction.icon,
@@ -350,7 +349,7 @@ fun Header(
                                     data.find { it.monthAndYear.month == App.Time.today.month && it.monthAndYear.year == App.Time.today.year }
                                         .also {
                                             if (it !== null) {
-                                                pagerState.scrollToPage(data.size / 400 + indexOffset + 1)
+                                                pagerState.scrollToPage(indexOffset + 1)
                                             }
                                         }
                                 }

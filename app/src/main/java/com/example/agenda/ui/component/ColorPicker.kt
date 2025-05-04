@@ -27,7 +27,7 @@ object ColorPicker {
         val controller = rememberColorPickerController()
         var isChangingBackground by remember { mutableStateOf(true) }
 
-        Modal.Component("Selecionar Cor") {
+        Modal.Wrapper("Selecionar Cor") {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {

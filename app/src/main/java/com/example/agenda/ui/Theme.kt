@@ -7,6 +7,9 @@ import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.KeyboardDoubleArrowRight
+import androidx.compose.material.icons.filled.Money
+import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -28,6 +31,9 @@ object Theme {
         Backup(I.Default.Backup),
         Restore(I.Default.Cloud),
         TransactionCategory(I.Default.Category),
-        EventCategory(I.Default.AssignmentLate)
+        EventCategory(I.Default.AssignmentLate),
+        Text(I.Default.Sort),
+        Money(I.Default.Money),
+        Transfer(I.Default.KeyboardDoubleArrowRight)
     }
 }

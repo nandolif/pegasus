@@ -153,7 +153,6 @@ object App {
     @SuppressLint("StaticFieldLeak")
     object UI {
         lateinit var context: Context
-        var currentUIDate: DayMonthYearObject = Time.today
         val pageRange = listOf(0, 1, 2)
         val cache = Cache()
         val notify = Notify()

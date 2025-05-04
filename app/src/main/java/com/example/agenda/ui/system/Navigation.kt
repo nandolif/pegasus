@@ -47,11 +47,7 @@ object Navigation {
     @Serializable
     data class SingleDayRoute(val day: Int, val month: Int, val year: Int)
 
-    @Serializable
-    class TransactionsRoute
 
-    @Serializable
-    data class CreateTransactionRoute(val id: String? = null)
 
     @Serializable
     class BanksRoute
@@ -117,13 +113,11 @@ object Navigation {
                         val args = backStackEntry.toRoute<SingleDayRoute>()
                         SingleDay(args.day, args.month, args.year)
                     }
-                    composable<TransactionsRoute> {
-                        //Transactions()
-                    }
-                    composable<CreateTransactionRoute> {
-                        val args = it.toRoute<CreateTransactionRoute>()
-                        CreateTransaction(args.id)
-                    }
+                    composable<Transactions.Screens.MonthlyTransactions.Route>
+                    { Transactions.Screens.MonthlyTransactions.Screen() }
+                    composable<Transactions.Screens.CreateTransaction.Route>
+                    { Transactions.Screens.CreateTransaction.Screen(args<Transactions.Screens.CreateTransaction.Route>(it)) }
+
                     composable<BanksRoute> {
                         Banks()
                     }

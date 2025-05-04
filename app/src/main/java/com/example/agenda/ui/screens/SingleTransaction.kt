@@ -41,11 +41,11 @@ fun SingleTransaction(id: String) {
                     runBlocking {
                         App.UseCases.deleteTransaction.execute(transaction!!)
                     }
-                    Navigation.navController.navigate(Navigation.TransactionsRoute())
+                    Navigation.navController.navigate(Transactions.Screens.MonthlyTransactions.Route())
                 },text="Deletar")
 
                 BTN(onClick = {
-                    Navigation.navController.navigate(Navigation.CreateTransactionRoute(transaction!!.id!!))
+                    Navigation.navController.navigate(Transactions.Screens.CreateTransaction.Route(transaction!!.id!!))
                 }, text="Atualizar")
 
             }

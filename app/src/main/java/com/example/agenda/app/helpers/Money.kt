@@ -9,6 +9,11 @@ object Money {
         val string: String,
     )
 
+    fun isZero(value: Any): Boolean {
+        val m = resolve(value,value)
+        return m.float == 0f
+
+    }
 
     fun format(value: Any, withCurrency: Boolean = true): String {
         return if(withCurrency) CURRENCY_SYMBOL + resolve(value,value).string else resolve(value,value).string

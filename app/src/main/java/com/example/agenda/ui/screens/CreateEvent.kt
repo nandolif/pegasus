@@ -64,13 +64,12 @@ class VM: ViewModel(){
 @Composable
 fun CreateEvent(eventDate: String?) {
     var description by remember { mutableStateOf("") }
-    var isOpen by remember { mutableStateOf(false) }
     var categoryId by remember { mutableStateOf("") }
     val vm: VM = viewModel()
     val eventCategories by vm.eventCategories.collectAsState()
 
 
-    var date by remember {
+    var dateState = remember {
         mutableStateOf(
             if (eventDate != null) {
                 Date.stringToDayMonthYear(eventDate)
@@ -79,22 +78,8 @@ fun CreateEvent(eventDate: String?) {
             }
         )
     }
-
-    fun onAccept(accept: Long) {
-        Date.longToDayMonthYear(accept).also {
-            date = DayMonthYearObj(day = it.day, month = it.month, year = it.year)
-            isOpen = false
-        }
-    }
-
-    fun onDismiss() {
-        isOpen = !isOpen
-    }
-    DateDialog(
-        isDialogVisible = isOpen,
-        onAccept = { onAccept(it) },
-        onDismiss = { onDismiss() }
-    )
+    var date by dateState
+    val toggleDateDialog = DateDialog.Component(dateState)
 
     Column(
         modifier = Modifier
@@ -166,7 +151,7 @@ fun CreateEvent(eventDate: String?) {
         Box(
             modifier = Modifier
                 .clickable {
-                    isOpen = !isOpen
+                    toggleDateDialog()
                 }
                 .fillMaxWidth()) {
 

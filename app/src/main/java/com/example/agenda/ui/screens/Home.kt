@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -25,7 +24,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -43,69 +41,84 @@ import com.example.agenda.app.entities.TransactionEntity
 import com.example.agenda.app.helps.Date
 import com.example.agenda.app.objects.DateObject
 import com.example.agenda.app.objects.MonthYearObject
+import com.example.agenda.domain.objects.DayMonthYearObj
 import com.example.agenda.ui.Theme
+import com.example.agenda.ui.component.Pager
 import com.example.agenda.ui.component.TXT
 import com.example.agenda.ui.system.Navigation
 import com.example.agenda.ui.viewmodels.HomeVM
 import com.example.agenda.ui.viewmodels.StructureVM
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun Home() {
-    val viewModel: HomeVM = viewModel()
     val structureVM: StructureVM = viewModel()
+    val viewModel: HomeVM = viewModel()
     val data by viewModel.data.collectAsState()
-    val pagerState = rememberPagerState(pageCount = { data.size * 400 }, initialPage = 1)
-    val currentPage: MonthYearObject? = data.getOrNull(pagerState.currentPage)
-    if (currentPage != null) {
-        val days = currentPage.weeks.flatMap { it.days }
-        App.UI.title = if (currentPage.monthAndYear.year == App.Time.today.year) {
-            Date.geMonthText(currentPage.monthAndYear)
-        } else {
-            "${Date.geMonthText(currentPage.monthAndYear)} - ${currentPage.monthAndYear.year}"
-        }
-        Column {
-            Header(structureVM, pagerState, data)
-            Pager(pagerState) {
+    val fetchMoreData = FetchMoreData()
+    val indexOffset = viewModel.indexOffset
+    val indexOffsetValue by indexOffset.collectAsState()
+    val pagerState = rememberPagerState(pageCount = { Pager.pageCount(data.size) }, initialPage = 1)
+    val currentPage: MonthYearObject = data[pagerState.currentPage]
+    val days = currentPage.weeks.flatMap { it.days }
+    App.UI.title = setTitle(currentPage)
+    Column {
+        Header(structureVM, pagerState, data,indexOffsetValue)
+        Pager.Wrapper(data, currentPage) {
+            Pager.Component(pagerState) {
                 WeeksBox(days, currentPage.weeks.size) { day, cellHeight ->
                     DayItem(days, day, cellHeight)
                 }
             }
-            Effect(pagerState, data, viewModel)
-
+            Pager.Effect(
+                fetchMoreData = fetchMoreData,
+                pagerState = pagerState,
+                data = data,
+                indexOffset = indexOffset
+            )
         }
+    }
+}
+
+
+private fun setTitle(currentPage: MonthYearObject): String {
+    return if (currentPage.monthAndYear.year == App.Time.today.year) {
+        Date.geMonthText(currentPage.monthAndYear)
     } else {
-        Loading()
+        "${Date.geMonthText(currentPage.monthAndYear)} - ${currentPage.monthAndYear.year}"
     }
 }
 
-
-@Composable
-private fun Effect(pagerState: PagerState, data: List<MonthYearObject>, viewModel: HomeVM) {
-    LaunchedEffect(pagerState.currentPage) {
-        App.UI.currentUIDate = data[pagerState.currentPage].monthAndYear
-        viewModel.getMoreData(data, pagerState)
-    }
-}
-
-@Composable
-private fun Pager(
-    pagerState: PagerState,
-    content: @Composable () -> Unit,
-) {
-    HorizontalPager(state = pagerState, key = { index -> index }) {
-        content()
-    }
-}
-
-@Composable
-private fun Loading() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+class FetchMoreData : Pager.FetchMoreData<MonthYearObject> {
+    override suspend fun execute(
+        data: List<MonthYearObject>,
+        pagerState: PagerState,
+        last: Boolean,
+        indexOffset: MutableStateFlow<Int>,
     ) {
-        Text(text = "No data available")
+        if (last) {
+            val l = data.last()
+            val date =
+                Date.getDate(
+                    DayMonthYearObj(
+                        1,
+                        l.monthAndYear.month + 1,
+                        l.monthAndYear.year
+                    )
+                )
+            App.UseCases.getWeeksDataInFuture.execute(listOf(date, true))
+            return
+        }
+        val l = data.first()
+        val date =
+            Date.getDate(DayMonthYearObj(1, l.monthAndYear.month - 1, l.monthAndYear.year))
+        App.UseCases.getWeeksDataInFuture.execute(listOf(date, false))
+        pagerState.scrollToPage(1)
+        indexOffset.value += 1
     }
 }
+
 
 @Composable
 private fun WeeksBox(

@@ -1,54 +1,75 @@
 package com.example.agenda.ui.component
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.Text
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-
-@Preview(showBackground = true)
-@Composable
-fun Test(){
-    Pager.Component()
-}
-
+import androidx.compose.runtime.State
+import kotlinx.coroutines.flow.MutableStateFlow
 
 object Pager {
+    fun pageCount(size: Int): Int {
+        return size * 200
+    }
+
+    interface FetchMoreData<T> {
+        suspend fun execute(
+            data: List<T>,
+            pagerState: PagerState,
+            last: Boolean = false,
+            indexOffset: MutableStateFlow<Int>,
+        )
+    }
 
     @Composable
-    fun Component(){
-        val data = listOf(8,0,1)
-        val realData = listOf(1,2,3,4,5,6,7,8,9)
-        val pagerState = rememberPagerState(
-            initialPage = 500,
-            pageCount = { 1000 }
-        )
-        var lastPage = pagerState.currentPage
+    fun <T> Wrapper(
+        data: List<T>,
+        currentPage: T?,
+        noData: @Composable () -> Unit = {},
+        content: @Composable (currentPage: T) -> Unit = {},
+    ) {
 
-
-        HorizontalPager(pagerState) {
-            Column(Modifier.fillMaxSize()) {
-
-                val page = realData[data[it % 2]]
-                Text(text = page.toString())
+        if (data.isNotEmpty()) {
+            if (currentPage != null) {
+                content(currentPage)
+            } else {
+                Loading()
             }
+        } else {
+            noData()
         }
 
+    }
 
-        LaunchedEffect(pagerState.currentPage){
+    @Composable
+    fun Loading() {
+        BTN("Carregando", {})
+    }
 
-            if(pagerState.currentPage > lastPage){
+    @Composable
+    fun Component(pagerState: PagerState, content: @Composable () -> Unit = {}) {
+        HorizontalPager(state = pagerState, key = { index -> index }) {
+            content()
+        }
+    }
 
+    @Composable
+    fun <T> Effect(
+        fetchMoreData: FetchMoreData<T>,
+        pagerState: PagerState,
+        data: List<T>,
+        indexOffset: MutableStateFlow<Int>,
+    ) {
+        LaunchedEffect(pagerState.currentPage) {
+            when (pagerState.currentPage) {
+                data.lastIndex -> {
+                    fetchMoreData.execute(data, pagerState, true, indexOffset)
+                }
+
+                0 -> {
+                    fetchMoreData.execute(data, pagerState, false, indexOffset)
+                }
             }
-
-
-            lastPage = pagerState.currentPage
         }
     }
 }
