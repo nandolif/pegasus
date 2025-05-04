@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.agenda.app.App
-import com.example.agenda.app.objects.MonthYearObject
+import com.example.agenda.domain.objects.MonthYearObj
 import com.example.agenda.ui.Theme
 import com.example.agenda.ui.system.Navigation
 import com.example.agenda.ui.viewmodels.StructureVM
@@ -269,7 +269,7 @@ fun Structure(content: (@Composable () -> Unit)) {
 fun Header(
     vm: StructureVM,
     pagerState: PagerState? = null,
-    data: List<MonthYearObject>? = null,
+    data: List<MonthYearObj>? = null,
     indexOffset: Int? = null,
 ) {
     val buttonsVisible by vm.buttonsVisible.collectAsState()

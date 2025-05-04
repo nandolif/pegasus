@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.agenda.app.App
-import com.example.agenda.app.entities.EventCategoryEntity
 import com.example.agenda.domain.entities.EventCategory
 import com.example.agenda.ui.Theme
 import com.example.agenda.ui.component.BTN
@@ -51,7 +50,7 @@ object EventCategories {
 
 
             class VM : ViewModel() {
-                val eventCategories = MutableStateFlow(mutableListOf<EventCategoryEntity>())
+                val eventCategories = MutableStateFlow(mutableListOf<EventCategory>())
 
                 init {
                     runBlocking {
@@ -108,7 +107,7 @@ object EventCategories {
 
 
                 var eventCategory by remember {
-                    mutableStateOf<EventCategoryEntity?>(
+                    mutableStateOf<EventCategory?>(
                         null
                     )
                 }
@@ -202,7 +201,7 @@ object EventCategories {
             @Composable
             fun Screen(args: Route) {
                 var eventCategory by remember {
-                    mutableStateOf<EventCategoryEntity?>(
+                    mutableStateOf<EventCategory?>(
                         null
                     )
                 }

@@ -1,13 +1,11 @@
 package com.example.agenda.app.repositories
 
 import com.example.agenda.app.common.repositories.CRUDRepository
-import com.example.agenda.app.common.repositories.CategoryRepository
-import com.example.agenda.app.entities.TransactionCategoryEntity
 import com.example.agenda.domain.entities.TransactionCategory
 import com.example.agenda.ui.screens.TransactionCategories
 import kotlinx.coroutines.runBlocking
 
-interface TransactionCategoryRepository : CRUDRepository<TransactionCategoryEntity> {
+interface TransactionCategoryRepository : CRUDRepository<TransactionCategory> {
     fun setup() {
         _setup(
             TransactionCategories.Default.Goal.NAME_AND_ID,

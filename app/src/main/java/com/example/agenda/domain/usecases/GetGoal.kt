@@ -1,7 +1,6 @@
 package com.example.agenda.domain.usecases
 
 import com.example.agenda.app.common.Usecase
-import com.example.agenda.app.entities.GoalEntity
 import com.example.agenda.app.repositories.GoalRepository
 import com.example.agenda.app.repositories.TransactionRepository
 import com.example.agenda.domain.entities.Goal
@@ -9,8 +8,8 @@ import com.example.agenda.domain.entities.Goal
 class GetGoal(
     private val goalRepository: GoalRepository,
     private val transactionRepository: TransactionRepository,
-) : Usecase<String, GoalEntity> {
-    override suspend fun execute(input: String): GoalEntity {
+) : Usecase<String, Goal> {
+    override suspend fun execute(input: String): Goal {
         val goal = goalRepository.getById(input)
         val allTransactions = transactionRepository.getByGoal(goal!!)
         var actualAmount = 0f

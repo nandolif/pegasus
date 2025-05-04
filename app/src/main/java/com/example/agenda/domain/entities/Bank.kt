@@ -1,19 +1,16 @@
 package com.example.agenda.domain.entities
 
-import com.example.agenda.app.entities.BankEntity
-import io.objectbox.annotation.Entity
+import com.example.agenda.app.common.Entity
+import io.objectbox.annotation.Entity as E
 import io.objectbox.annotation.Id
 
-@Entity
+@E
 data class Bank(
-
-    override val name: String,
-    override var balance: Float,
+    val name: String,
+    var balance: Float,
     override var id: String?,
     @Id
     var _id: Long = 0,
     override var created_at: Long?,
     override var updated_at: Long?,
-) : BankEntity {
-    init{createMetadata();}
-}
+) : Entity {init {createMetadata()}}

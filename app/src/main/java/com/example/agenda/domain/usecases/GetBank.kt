@@ -1,9 +1,7 @@
 package com.example.agenda.domain.usecases
 
 import com.example.agenda.app.common.Usecase
-import com.example.agenda.app.entities.BankEntity
 import com.example.agenda.app.helps.Date
-import com.example.agenda.app.objects.DayMonthYearObject
 import com.example.agenda.app.repositories.BankRepository
 import com.example.agenda.app.repositories.TransactionRepository
 import com.example.agenda.domain.entities.Bank
@@ -12,9 +10,9 @@ import com.example.agenda.domain.objects.DayMonthYearObj
 class GetBank(
     private val bankRepository: BankRepository,
     private val transactionRepository: TransactionRepository,
-    private val today: DayMonthYearObject = Date.getToday(),
-) : Usecase<String, BankEntity> {
-    override suspend fun execute(input: String): BankEntity {
+    private val today: DayMonthYearObj = Date.getToday(),
+) : Usecase<String, Bank> {
+    override suspend fun execute(input: String): Bank {
         val bank = bankRepository.getById(input)
         val transactions = transactionRepository.getByBank(bank!!)
 

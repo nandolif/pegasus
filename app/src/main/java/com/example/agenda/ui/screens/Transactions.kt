@@ -23,12 +23,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.agenda.app.App
-import com.example.agenda.app.entities.BankEntity
-import com.example.agenda.app.entities.GoalEntity
-import com.example.agenda.app.entities.TransactionCategoryEntity
-import com.example.agenda.app.entities.TransactionEntity
 import com.example.agenda.app.helps.Date
-import com.example.agenda.app.objects.DayMonthYearObject
+import com.example.agenda.domain.entities.Bank
+import com.example.agenda.domain.entities.Goal
+import com.example.agenda.domain.entities.Transaction
+import com.example.agenda.domain.entities.TransactionCategory
 import com.example.agenda.domain.objects.DayMonthYearObj
 import com.example.agenda.ui.Theme
 import com.example.agenda.ui.component.BTN
@@ -58,12 +57,12 @@ object Transactions {
             data class Data(
                 val total: Float,
                 val percentage: Double,
-                val category: TransactionCategoryEntity,
-                val transactions: List<TransactionEntity>,
+                val category: TransactionCategory,
+                val transactions: List<Transaction>,
             )
 
             data class DataList(
-                val date: DayMonthYearObject,
+                val date: DayMonthYearObj,
                 val total: Float,
                 val data: List<Data>,
             )
@@ -111,12 +110,12 @@ object Transactions {
             class VM : ViewModel() {
                 val currentDate = MutableStateFlow(App.Time.today)
                 val allTransactionCategories =
-                    MutableStateFlow(mutableListOf<TransactionCategoryEntity>())
+                    MutableStateFlow(mutableListOf<TransactionCategory>())
                 val data = MutableStateFlow<MutableList<DataList>>(mutableListOf())
                 val indexOffset = MutableStateFlow(0)
                 val fetchMoreData = FetchMoreData(this)
 
-                suspend fun getTransactionsByMonth(monthDate: DayMonthYearObject, last: Boolean) {
+                suspend fun getTransactionsByMonth(monthDate: DayMonthYearObj, last: Boolean) {
                     val transactions =
                         App.Repositories.transactionRepository.getByMonthAndYear(monthDate)
                             .toMutableList()
@@ -224,11 +223,11 @@ object Transactions {
             fun Screen(route: Route) {
                 var amount by remember { mutableStateOf(0f) }
                 var description by remember { mutableStateOf("") }
-                val bank = remember { mutableStateOf<BankEntity?>(null) }
-                val transferTo = remember { mutableStateOf<BankEntity?>(null) }
-                val goal = remember { mutableStateOf<GoalEntity?>(null) }
-                val category = remember { mutableStateOf<TransactionCategoryEntity?>(null) }
-                val date = remember { mutableStateOf<DayMonthYearObject?>(null) }
+                val bank = remember { mutableStateOf<Bank?>(null) }
+                val transferTo = remember { mutableStateOf<Bank?>(null) }
+                val goal = remember { mutableStateOf<Goal?>(null) }
+                val category = remember { mutableStateOf<TransactionCategory?>(null) }
+                val date = remember { mutableStateOf<DayMonthYearObj?>(null) }
                 val structureVM: StructureVM = viewModel()
                 val vm: TransactionsVM = viewModel()
                 val banks by vm.banks.collectAsState()

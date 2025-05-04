@@ -1,6 +1,5 @@
 package com.example.agenda.domain.repositories.box
 
-import com.example.agenda.app.entities.GoalEntity
 import com.example.agenda.app.repositories.GoalRepository
 import com.example.agenda.domain.entities.Goal
 import io.objectbox.Box
@@ -8,11 +7,11 @@ import io.objectbox.Box
 class GoalBoxRepository(
     private val box: Box<Goal>,
 ) : GoalRepository {
-    override suspend fun create(entity: GoalEntity) {
-        box.put(entity as Goal)
+    override suspend fun create(entity: Goal) {
+        box.put(entity)
     }
 
-    override suspend fun update(entity: GoalEntity) {
+    override suspend fun update(entity: Goal) {
         box.all.find { it.id == entity.id }?.let {
             box.put(
                 it.copy(
@@ -24,18 +23,18 @@ class GoalBoxRepository(
         }
     }
 
-    override suspend fun delete(entity: GoalEntity): Boolean {
+    override suspend fun delete(entity: Goal): Boolean {
         box.all.find { it.id == entity.id }?.let {
             box.remove(it)
         }
         return true
     }
 
-    override suspend fun getAll(): List<GoalEntity> {
+    override suspend fun getAll(): List<Goal> {
         return box.all
     }
 
-    override suspend fun getById(id: String): GoalEntity {
+    override suspend fun getById(id: String): Goal {
         return box.all.find { it.id == id }!!
     }
 }

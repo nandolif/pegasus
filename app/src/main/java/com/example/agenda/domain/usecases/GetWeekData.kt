@@ -4,10 +4,6 @@ import com.example.agenda.app.repositories.EventRepository
 import com.example.agenda.app.repositories.TransactionRepository
 import com.example.agenda.app.common.Usecase
 import com.example.agenda.app.helps.Date
-import com.example.agenda.app.objects.DateObject
-import com.example.agenda.app.objects.DayMonthYearObject
-import com.example.agenda.app.objects.MonthYearObject
-import com.example.agenda.app.objects.WeekObject
 import com.example.agenda.domain.objects.DateObj
 import com.example.agenda.domain.objects.DayMonthYearObj
 import com.example.agenda.domain.objects.MonthYearObj
@@ -16,17 +12,17 @@ import com.example.agenda.domain.objects.WeekObj
 class GetWeekData(
     private val transactionRepository: TransactionRepository,
     private val eventRepository: EventRepository,
-) : Usecase<DayMonthYearObject, MonthYearObject> {
-    override suspend fun execute(input: DayMonthYearObject): MonthYearObject {
+) : Usecase<DayMonthYearObj, MonthYearObj> {
+    override suspend fun execute(input: DayMonthYearObj): MonthYearObj {
 
 
         CreateRecurrenceEvent(eventRepository).execute(input)
 
         val weeks = Date.getWeeks(input, 6).toMutableList()
 
-        val newWeeks = mutableListOf<WeekObject>()
+        val newWeeks = mutableListOf<WeekObj>()
         for (week in weeks) {
-            val d = mutableListOf<DateObject>()
+            val d = mutableListOf<DateObj>()
             for (day in week.days) {
                 val transactions = transactionRepository.getByDate(day.date)
                 val events = eventRepository.getByDate(day.date)

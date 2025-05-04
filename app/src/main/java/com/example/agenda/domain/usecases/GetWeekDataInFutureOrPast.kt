@@ -4,9 +4,9 @@ import com.example.agenda.app.common.ObserverEvents
 import com.example.agenda.app.common.Usecase
 import com.example.agenda.app.common.observer.Observer
 import com.example.agenda.app.common.observer.Subject
-import com.example.agenda.app.objects.DayMonthYearObject
 import com.example.agenda.app.repositories.EventRepository
 import com.example.agenda.app.repositories.TransactionRepository
+import com.example.agenda.domain.objects.DayMonthYearObj
 
 @Suppress("IMPLICIT_CAST_TO_ANY")
 class GetWeekDataInFutureOrPast(
@@ -15,7 +15,7 @@ class GetWeekDataInFutureOrPast(
 ) : Usecase<List<Any>, Unit>, Subject<GetWeekDataInFutureOrPast> {
     override val observers: MutableList<Observer> = mutableListOf()
     override suspend fun execute(input: List<Any>) {
-        val date = input[0] as DayMonthYearObject
+        val date = input[0] as DayMonthYearObj
         val isInFuture = input[1] as Boolean
         val weekData = GetWeekData(transactionRepository, eventRepository).execute(date)
         if (isInFuture) {

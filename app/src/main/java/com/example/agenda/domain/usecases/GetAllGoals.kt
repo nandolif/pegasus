@@ -5,8 +5,8 @@ import com.example.agenda.app.common.ObserverEvents
 import com.example.agenda.app.common.Usecase
 import com.example.agenda.app.common.observer.Observer
 import com.example.agenda.app.common.observer.Subject
-import com.example.agenda.app.entities.GoalEntity
 import com.example.agenda.app.repositories.GoalRepository
+import com.example.agenda.domain.entities.Goal
 
 class GetAllGoals(
     private val goalRepository: GoalRepository,
@@ -14,7 +14,7 @@ class GetAllGoals(
     override val observers: MutableList<Observer> = mutableListOf()
     override suspend fun execute(input: Unit) {
         val goals = goalRepository.getAll()
-        val goalsList = mutableListOf<GoalEntity>()
+        val goalsList = mutableListOf<Goal>()
         for (goal in goals){
             goalsList.add(App.UseCases.getGoal.execute(goal.id!!))
         }

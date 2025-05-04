@@ -33,9 +33,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.agenda.app.App
 import com.example.agenda.app.common.EventType
 import com.example.agenda.app.common.RECURRENCE
-import com.example.agenda.app.entities.EventCategoryEntity
 import com.example.agenda.app.helps.Date
 import com.example.agenda.domain.entities.Event
+import com.example.agenda.domain.entities.EventCategory
 import com.example.agenda.domain.objects.DayMonthYearObj
 import com.example.agenda.ui.Theme
 import com.example.agenda.ui.component.BTN
@@ -50,7 +50,7 @@ import kotlinx.coroutines.runBlocking
 
 
 class VM: ViewModel(){
-    val eventCategories = MutableStateFlow(mutableListOf<EventCategoryEntity>())
+    val eventCategories = MutableStateFlow(mutableListOf<EventCategory>())
 
     init {
         runBlocking {

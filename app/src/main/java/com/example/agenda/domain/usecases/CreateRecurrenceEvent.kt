@@ -1,19 +1,17 @@
 package com.example.agenda.domain.usecases
 
 import com.example.agenda.app.common.Usecase
-import com.example.agenda.app.entities.EventEntity
 import com.example.agenda.app.helps.Date
-import com.example.agenda.app.objects.DayMonthYearObject
 import com.example.agenda.app.repositories.EventRepository
 import com.example.agenda.domain.entities.Event
 import com.example.agenda.domain.objects.DayMonthYearObj
 
 class CreateRecurrenceEvent(
     private val eventRepository: EventRepository,
-) : Usecase<DayMonthYearObject, Unit> {
-    override suspend fun execute(input: DayMonthYearObject) {
+) : Usecase<DayMonthYearObj, Unit> {
+    override suspend fun execute(input: DayMonthYearObj) {
         val events = eventRepository.getByRecurrence()
-        suspend fun createRecurrence(event: EventEntity) {
+        suspend fun createRecurrence(event: Event) {
             val children = eventRepository.getByRecurrenceId(event.id!!)
             val lastChild = if(children.isNotEmpty()) children.last() else event
             val lastDayDate = Date.getWeeks(input,6).last().days.last().date

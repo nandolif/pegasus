@@ -1,12 +1,11 @@
 package com.example.agenda.app.repositories
 
 import com.example.agenda.app.common.repositories.CRUDRepository
-import com.example.agenda.app.entities.EventCategoryEntity
 import com.example.agenda.domain.entities.EventCategory
 import com.example.agenda.ui.screens.EventCategories
 import kotlinx.coroutines.runBlocking
 
-interface EventCategoryRepository: CRUDRepository<EventCategoryEntity> {
+interface EventCategoryRepository: CRUDRepository<EventCategory> {
     fun setup() {
         _setup(
             EventCategories.Default.Others.NAME_AND_ID,

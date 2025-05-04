@@ -20,14 +20,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.agenda.app.helps.Date
-import com.example.agenda.app.objects.DayMonthYearObject
+import com.example.agenda.domain.objects.DayMonthYearObj
 import com.example.agenda.ui.Theme
 
 
 object DateDialog {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun Component(date: MutableState<DayMonthYearObject?>): () -> Unit {
+    fun Component(date: MutableState<DayMonthYearObj?>): () -> Unit {
         var isDialogVisible by remember { mutableStateOf(false) }
 
         fun toggle() {

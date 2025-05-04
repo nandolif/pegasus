@@ -3,11 +3,9 @@ package com.example.agenda.ui.system
 import com.example.agenda.app.App
 import com.example.agenda.app.common.ObserverEvents
 import com.example.agenda.app.common.observer.Observer
-import com.example.agenda.app.entities.BankEntity
-import com.example.agenda.app.entities.GoalEntity
-import com.example.agenda.app.entities.TransactionEntity
-import com.example.agenda.app.objects.MonthYearObject
-//import com.example.agenda.app.objects.TransactionsMonthObject
+import com.example.agenda.domain.entities.Bank
+import com.example.agenda.domain.entities.Goal
+import com.example.agenda.domain.entities.Transaction
 import com.example.agenda.domain.objects.MonthYearObj
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,12 +14,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.runBlocking
 
 class Cache : Observer {
-    val monthYearList = MutableStateFlow<MutableList<MonthYearObject>>(mutableListOf())
-    val banks = MutableStateFlow(mutableListOf<BankEntity>())
-    val transactions: MutableStateFlow<MutableList<TransactionEntity>> =
+    val monthYearList = MutableStateFlow<MutableList<MonthYearObj>>(mutableListOf())
+    val banks = MutableStateFlow(mutableListOf<Bank>())
+    val transactions: MutableStateFlow<MutableList<Transaction>> =
         MutableStateFlow(mutableListOf())
-    val goals = MutableStateFlow(mutableListOf<GoalEntity>())
-    fun getMonthYearList(): StateFlow<MutableList<MonthYearObject>> {
+    val goals = MutableStateFlow(mutableListOf<Goal>())
+    fun getMonthYearList(): StateFlow<MutableList<MonthYearObj>> {
         runBlocking {
             if (monthYearList.value.isEmpty()) {
                 resetCache()
@@ -30,7 +28,7 @@ class Cache : Observer {
         return monthYearList.asStateFlow()
     }
 
-    fun getBanks(): StateFlow<MutableList<BankEntity>> {
+    fun getBanks(): StateFlow<MutableList<Bank>> {
         runBlocking {
             if (banks.value.isEmpty()) {
                 App.UseCases.getAllBanks.execute(Unit)
@@ -39,7 +37,7 @@ class Cache : Observer {
         return banks.asStateFlow()
     }
 
-    fun getTransactions(): StateFlow<MutableList<TransactionEntity>> {
+    fun getTransactions(): StateFlow<MutableList<Transaction>> {
         runBlocking {
             if (transactions.value.isEmpty()) {
                 App.UseCases.getAllTransactions.execute(Unit)
@@ -49,7 +47,7 @@ class Cache : Observer {
         return transactions.asStateFlow()
     }
 
-    fun getGoals(): StateFlow<MutableList<GoalEntity>> {
+    fun getGoals(): StateFlow<MutableList<Goal>> {
         runBlocking {
             if (goals.value.isEmpty()) {
                 App.UseCases.getAllGoals.execute(Unit)
@@ -91,11 +89,11 @@ class Cache : Observer {
             }
 
             ObserverEvents.GET_WEEKS_DATA -> {
-                value as MutableList<MonthYearObject>; monthYearList.value = value
+                value as MutableList<MonthYearObj>; monthYearList.value = value
             }
 
             ObserverEvents.GET_ALL_BANKS -> {
-                value as MutableList<BankEntity>; banks.value = value
+                value as MutableList<Bank>; banks.value = value
             }
 
             ObserverEvents.GET_LIST_OF_TRANSCATIONS_BY_MONTH_AND_YEAR -> {
@@ -103,10 +101,10 @@ class Cache : Observer {
             }
 
             ObserverEvents.GET_ALL_GOALS -> {
-                value as MutableList<GoalEntity>; goals.value = value
+                value as MutableList<Goal>; goals.value = value
             }
             ObserverEvents.GET_ALL_TRANSACTIONS -> {
-                value as MutableList<TransactionEntity>; transactions.value = value
+                value as MutableList<Transaction>; transactions.value = value
             }
 
             ObserverEvents.BACKUP -> TODO()

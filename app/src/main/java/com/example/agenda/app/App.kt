@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.example.agenda.app.helps.Date
-import com.example.agenda.app.objects.DayMonthYearObject
 import com.example.agenda.domain.entities.Bank
 import com.example.agenda.domain.entities.Event
 import com.example.agenda.domain.entities.EventCategory

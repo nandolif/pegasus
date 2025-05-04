@@ -1,8 +1,6 @@
 package com.example.agenda.domain.repositories.box
 
 import com.example.agenda.app.App
-import com.example.agenda.app.entities.TransactionCategoryEntity
-import com.example.agenda.app.entities.TransactionEntity
 import com.example.agenda.app.repositories.TransactionCategoryRepository
 import com.example.agenda.domain.entities.TransactionCategory
 import io.objectbox.Box
@@ -11,11 +9,11 @@ class TransactionCategoryBoxRepository(
     val box: Box<TransactionCategory>,
 ) : TransactionCategoryRepository {
 
-    override suspend fun create(entity: TransactionCategoryEntity) {
-        box.put(entity as TransactionCategory)
+    override suspend fun create(entity: TransactionCategory) {
+        box.put(entity)
     }
 
-    override suspend fun update(entity: TransactionCategoryEntity) {
+    override suspend fun update(entity: TransactionCategory) {
         box.all.first { it.id == entity.id }.let {
             box.put(it.copy(
                 name = entity.name,
@@ -26,18 +24,18 @@ class TransactionCategoryBoxRepository(
         }
     }
 
-    override suspend fun delete(entity: TransactionCategoryEntity): Boolean {
+    override suspend fun delete(entity: TransactionCategory): Boolean {
         box.all.first { it.id == entity.id }.let {
             box.remove(it)
         }
         return true
     }
 
-    override suspend fun getAll(): List<TransactionCategoryEntity> {
+    override suspend fun getAll(): List<TransactionCategory> {
         return box.all
     }
 
-    override suspend fun getById(id: String): TransactionCategoryEntity? {
+    override suspend fun getById(id: String): TransactionCategory? {
         if (box.all.isEmpty()) return  null
         return box.all.firstOrNull { it.id == id }
     }

@@ -1,17 +1,16 @@
 package com.example.agenda.app.helps
 
 import com.example.agenda.app.common.Entity
-import com.example.agenda.app.entities.VariableEntity
 import com.example.agenda.domain.entities.Variable
 
 object Calculator {
-    fun eval(value: String, variables: List<VariableEntity>): Float {
+    fun eval(value: String, variables: List<Variable>): Float {
         var newValue = substituteVariable(value, variables)
         newValue = separateEquations(newValue)
         return newValue.toFloat()
     }
-    fun getLocalVariables(c: Entity): List<VariableEntity> {
-        val variables = mutableListOf<VariableEntity>()
+    fun getLocalVariables(c: Entity): List<Variable> {
+        val variables = mutableListOf<Variable>()
         var t = c.toString()
         t = t.replace(",","")
         t = t.replace(" ", "=")
@@ -37,7 +36,7 @@ object Calculator {
         }
         return variables
     }
-    private fun substituteVariable(value: String, variables: List<VariableEntity>): String {
+    private fun substituteVariable(value: String, variables: List<Variable>): String {
         var t = value
         for (variable in variables) {
             if (t.contains("{${variable.name}}")) {

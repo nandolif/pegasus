@@ -4,5 +4,5 @@ package com.example.agenda.domain.objects
 //
 //data class TransactionsMonthObj(
 //    override val date: DayMonthYearObject,
-//    override val transactions: List<TransactionEntity>
+//    override val transactions: List<Transaction>
 //) : TransactionsMonthObject

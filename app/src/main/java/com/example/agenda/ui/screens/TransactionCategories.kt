@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.agenda.app.App
-import com.example.agenda.app.entities.TransactionCategoryEntity
 import com.example.agenda.domain.entities.TransactionCategory
 import com.example.agenda.ui.Theme
 import com.example.agenda.ui.component.BTN
@@ -61,7 +60,7 @@ object TransactionCategories {
             class Route
             class VM : ViewModel() {
                 val transactionCategories =
-                    MutableStateFlow(mutableListOf<TransactionCategoryEntity>())
+                    MutableStateFlow(mutableListOf<TransactionCategory>())
 
                 init {
                     runBlocking {
@@ -122,7 +121,7 @@ object TransactionCategories {
 
 
                 var transactionCategory by remember {
-                    mutableStateOf<TransactionCategoryEntity?>(
+                    mutableStateOf<TransactionCategory?>(
                         null
                     )
                 }
@@ -213,7 +212,7 @@ object TransactionCategories {
             @Composable
             fun Screen(args: Route) {
                 var transactionCategory by remember {
-                    mutableStateOf<TransactionCategoryEntity?>(
+                    mutableStateOf<TransactionCategory?>(
                         null
                     )
                 }

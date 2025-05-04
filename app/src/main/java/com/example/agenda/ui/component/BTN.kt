@@ -17,12 +17,6 @@ import androidx.compose.ui.unit.dp
 import com.example.agenda.ui.Theme
 
 
-data class BTNCollors(
-    val containerColor: Color,
-    val contentColor: Color = Theme.Colors.A.color,
-    val disabledContainerColor: Color = Theme.Colors.A.color,
-    val disabledContentColor: Color = Theme.Colors.B.color,
-)
 
 enum class BTNType {
     PRIMARY,

@@ -14,7 +14,6 @@ import com.example.agenda.ui.screens.Banks
 import com.example.agenda.ui.screens.CreateBank
 import com.example.agenda.ui.screens.CreateEvent
 import com.example.agenda.ui.screens.CreateGoal
-import com.example.agenda.ui.screens.CreateTransaction
 import com.example.agenda.ui.screens.EventCategories
 import com.example.agenda.ui.screens.Goals
 import com.example.agenda.ui.screens.Home

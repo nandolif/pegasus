@@ -2,9 +2,6 @@ package com.example.agenda.app.helps
 
 import com.example.agenda.app.App
 import com.example.agenda.app.common.RECURRENCE
-import com.example.agenda.app.objects.DateObject
-import com.example.agenda.app.objects.DayMonthYearObject
-import com.example.agenda.app.objects.WeekObject
 import com.example.agenda.domain.objects.DateObj
 import com.example.agenda.domain.objects.DayMonthYearObj
 import com.example.agenda.domain.objects.WeekObj
@@ -15,6 +12,7 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.time.temporal.ChronoUnit
+import java.util.Date
 import java.util.Locale
 import kotlin.math.abs
 import kotlin.properties.Delegates
@@ -54,7 +52,7 @@ object Date {
 
     fun longToDayMonthYear(
         timestamp: Long,
-    ): DayMonthYearObject {
+    ): DayMonthYearObj {
         val i = Instant.ofEpochMilli(timestamp).atOffset(ZoneOffset.UTC).toLocalDate()
             .format(DateTimeFormatter.ofPattern(App.Time.PATTERN)).toString()
 
@@ -67,7 +65,7 @@ object Date {
 
     fun stringToDayMonthYear(
         date: String
-    ): DayMonthYearObject {
+    ): DayMonthYearObj {
         val list = date.split("/")
         val day = list[0].toInt()
         val month = list[1].toInt()
@@ -76,14 +74,14 @@ object Date {
     }
 
     fun dayMonthYearToString(
-        date: DayMonthYearObject
+        date: DayMonthYearObj
     ): String {
        return if(date.day < 10) {"0" + date.day.toString() } else {date.day.toString()} + "/" +
                if(date.month < 10){ "0"+ date.month.toString()} else {date.month.toString()} +
                "/" + date.year.toString()
     }
 
-    fun getFirstSundayNextToTheFirstDayOfTheMonth(date: DayMonthYearObject): DayMonthYearObject {
+    fun getFirstSundayNextToTheFirstDayOfTheMonth(date: DayMonthYearObj): DayMonthYearObj {
         var firstSunday = DayMonthYearObj(day= 1, month = date.month, year = date.year)
         val todayNumber = getWeekTextToDay(firstSunday)
         firstSunday = DayMonthYearObj(-todayNumber, firstSunday.month, firstSunday.year)
@@ -91,15 +89,15 @@ object Date {
     }
 
     fun getWeeks(
-        date: DayMonthYearObject,
+        date: DayMonthYearObj,
         totalWeeks: Int,
         firstDayOfWeek: Int = 1,
-    ): List<WeekObject> {
+    ): List<WeekObj> {
         val firstSunday = getFirstSundayNextToTheFirstDayOfTheMonth(date)
         var day = DayMonthYearObj(day = firstSunday.day + (firstDayOfWeek - 1), firstSunday.month, firstSunday.year)
-        val weeks = mutableListOf<WeekObject>()
+        val weeks = mutableListOf<WeekObj>()
         for (i in 1..totalWeeks) {
-            val list = mutableListOf<DateObject>()
+            val list = mutableListOf<DateObj>()
             for (j in 1..7) {
                 val a = DayMonthYearObj(
                     day.day + 1,
@@ -142,7 +140,7 @@ object Date {
 
     }
 
-    fun geMonthText(date: DayMonthYearObject): String {
+    fun geMonthText(date: DayMonthYearObj): String {
         return when (date.month) {
             1 -> "Janeiro"
             2 -> "Fevereiro"
@@ -176,7 +174,7 @@ object Date {
             .withYear(today.year).toEpochSecond()
     }
 
-    fun getToday(): DayMonthYearObject {
+    fun getToday(): DayMonthYearObj {
         val today = Instant.now().atZone(ZoneId.of(App.Time.ZONE_ID))
         return DayMonthYearObj(
             day = today.dayOfMonth,
@@ -267,7 +265,7 @@ object Date {
         return DayMonthYearObj(d, m, y)
     }
 
-    fun getDate(date: DayMonthYearObject): DayMonthYearObj {
+    fun getDate(date: DayMonthYearObj): DayMonthYearObj {
         var day = date.day
         var month = date.month
         var year = date.year
@@ -294,7 +292,7 @@ object Date {
         nWeeks: Int?,
         nMonths: Int?,
         nYears: Int?,
-    ): DayMonthYearObject {
+    ): DayMonthYearObj {
         return when (type) {
             RECURRENCE.EVERY_N_DAYS -> {
                 getDate(DayMonthYearObj(date.day + nDays!!, date.month, date.year))
@@ -317,7 +315,7 @@ object Date {
         }
     }
 
-    fun isInFuture(date: DayMonthYearObject, today: DayMonthYearObject): Boolean {
+    fun isInFuture(date: DayMonthYearObj, today: DayMonthYearObj): Boolean {
         if (date.year > today.year) {
             return true
         }

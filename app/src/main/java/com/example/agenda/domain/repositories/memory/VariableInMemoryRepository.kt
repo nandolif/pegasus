@@ -1,27 +1,27 @@
 package com.example.agenda.domain.repositories.memory
 
-import com.example.agenda.app.entities.VariableEntity
 import com.example.agenda.app.repositories.VariableRepository
+import com.example.agenda.domain.entities.Variable
 
 class VariableInMemoryRepository: VariableRepository {
-   val variables = mutableListOf<VariableEntity>()
-    override suspend fun create(entity: VariableEntity) {
+   val variables = mutableListOf<Variable>()
+    override suspend fun create(entity: Variable) {
         variables.add(entity)
     }
 
-    override suspend fun update(entity: VariableEntity){
+    override suspend fun update(entity: Variable){
         TODO("Not yet implemented")
     }
 
-    override suspend fun delete(entity: VariableEntity): Boolean {
+    override suspend fun delete(entity: Variable): Boolean {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getAll(): List<VariableEntity> {
+    override suspend fun getAll(): List<Variable> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getById(id: String): VariableEntity {
+    override suspend fun getById(id: String): Variable {
         TODO("Not yet implemented")
     }
 }

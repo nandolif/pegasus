@@ -1,7 +1,7 @@
 package com.example.agenda.app.repositories
 
 import com.example.agenda.app.common.repositories.CRUDRepository
-import com.example.agenda.app.entities.VariableEntity
+import com.example.agenda.domain.entities.Variable
 
-interface VariableRepository: CRUDRepository<VariableEntity> {
+interface VariableRepository: CRUDRepository<Variable> {
 }

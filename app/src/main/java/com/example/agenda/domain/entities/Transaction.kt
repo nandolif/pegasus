@@ -1,45 +1,41 @@
 package com.example.agenda.domain.entities
 
+import com.example.agenda.app.common.Entity
 import com.example.agenda.app.common.RECURRENCE
-import com.example.agenda.app.entities.TransactionEntity
+import com.example.agenda.app.common.RecurrenceEntity
 import com.example.agenda.domain.repositories.box.RecurrenceConverter
 import com.example.agenda.ui.screens.TransactionCategories
 import io.objectbox.annotation.Convert
-import io.objectbox.annotation.Entity
+import io.objectbox.annotation.Entity as E
 import io.objectbox.annotation.Id
 
-@Entity
+@E
 data class Transaction(
     @Id
     var _id: Long = 0,
     override var id: String?,
-    override val day: Int,
-    override val month: Int,
-    override val year: Int,
-    override val amount: Float,
-    override val description: String,
+    val day: Int,
+    val month: Int,
+    val year: Int,
+    val amount: Float,
+    val description: String,
     override var created_at: Long?,
     override var updated_at: Long?,
-    override val bankId: String,
+    val bankId: String,
     override val recurrenceId: String?,
-    override val ghost: Boolean,
-    override val goalId: String?,
-    override val canceled: Boolean,
-    override val canceledDay: Int?,
-    override val canceledMonth: Int?,
-    override val canceledYear: Int?,
+    val ghost: Boolean,
+    val goalId: String?,
+    val canceled: Boolean,
+    val canceledDay: Int?,
+    val canceledMonth: Int?,
+    val canceledYear: Int?,
     override val nDays: Int?,
     override val nWeeks: Int?,
     override val nMonths: Int?,
     override val nYears: Int?,
     @Convert(converter = RecurrenceConverter::class, dbType = String::class)
     override val recurrenceType: RECURRENCE?,
-    override var categoryId: String,
-) : TransactionEntity {
-    init {
-        createMetadata()
-        if(goalId != null) categoryId = TransactionCategories.Default.Goal.NAME_AND_ID
-    }
-}
+    var categoryId: String,
+) : Entity, RecurrenceEntity {init { createMetadata();if (goalId != null) categoryId = TransactionCategories.Default.Goal.NAME_AND_ID}}
 
 

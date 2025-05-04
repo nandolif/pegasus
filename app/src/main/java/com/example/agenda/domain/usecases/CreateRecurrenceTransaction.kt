@@ -1,7 +1,6 @@
 package com.example.agenda.domain.usecases
 
 import com.example.agenda.app.common.Usecase
-import com.example.agenda.app.entities.TransactionEntity
 import com.example.agenda.app.helps.Date
 import com.example.agenda.app.repositories.TransactionRepository
 import com.example.agenda.domain.entities.Transaction
@@ -13,7 +12,7 @@ class CreateRecurrenceTransaction(
     override suspend fun execute(input: DayMonthYearObj) {
         val recurrenceTransactions = transactionRepository.getByRecurrence()
 
-        suspend fun createRecurrence(recurrenceTransaction: TransactionEntity) {
+        suspend fun createRecurrence(recurrenceTransaction: Transaction) {
             var last = recurrenceTransaction
 
             val allRecurrenceChild =

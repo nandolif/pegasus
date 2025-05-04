@@ -37,11 +37,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.agenda.app.App
-import com.example.agenda.app.entities.TransactionEntity
 import com.example.agenda.app.helps.Date
-import com.example.agenda.app.objects.DateObject
-import com.example.agenda.app.objects.MonthYearObject
+import com.example.agenda.domain.entities.Transaction
+import com.example.agenda.domain.objects.DateObj
 import com.example.agenda.domain.objects.DayMonthYearObj
+import com.example.agenda.domain.objects.MonthYearObj
 import com.example.agenda.ui.Theme
 import com.example.agenda.ui.component.Pager
 import com.example.agenda.ui.component.TXT
@@ -60,7 +60,7 @@ fun Home() {
     val indexOffset = viewModel.indexOffset
     val indexOffsetValue by indexOffset.collectAsState()
     val pagerState = rememberPagerState(pageCount = { Pager.pageCount(data.size) }, initialPage = 1)
-    val currentPage: MonthYearObject = data[pagerState.currentPage]
+    val currentPage: MonthYearObj = data[pagerState.currentPage]
     val days = currentPage.weeks.flatMap { it.days }
     App.UI.title = setTitle(currentPage)
     Column {
@@ -82,7 +82,7 @@ fun Home() {
 }
 
 
-private fun setTitle(currentPage: MonthYearObject): String {
+private fun setTitle(currentPage: MonthYearObj): String {
     return if (currentPage.monthAndYear.year == App.Time.today.year) {
         Date.geMonthText(currentPage.monthAndYear)
     } else {
@@ -90,9 +90,9 @@ private fun setTitle(currentPage: MonthYearObject): String {
     }
 }
 
-class FetchMoreData : Pager.FetchMoreData<MonthYearObject> {
+class FetchMoreData : Pager.FetchMoreData<MonthYearObj> {
     override suspend fun execute(
-        data: List<MonthYearObject>,
+        data: List<MonthYearObj>,
         pagerState: PagerState,
         last: Boolean,
         indexOffset: MutableStateFlow<Int>,
@@ -122,9 +122,9 @@ class FetchMoreData : Pager.FetchMoreData<MonthYearObject> {
 
 @Composable
 private fun WeeksBox(
-    days: List<DateObject>,
+    days: List<DateObj>,
     rows: Int,
-    content: @Composable (day: DateObject, cellHeight: Dp) -> Unit,
+    content: @Composable (day: DateObj, cellHeight: Dp) -> Unit,
 ) {
     BoxWithConstraints(
         modifier = Modifier
@@ -155,7 +155,7 @@ private fun WeeksBox(
 }
 
 @Composable
-private fun DayItem(days: List<DateObject>, day: DateObject, cellHeight: Dp) {
+private fun DayItem(days: List<DateObj>, day: DateObj, cellHeight: Dp) {
     val interactionSource = remember { MutableInteractionSource() }
     val isWeekend = (days.indexOf(day) + 1) % 7 == 0 || (days.indexOf(day) + 2) % 7 == 0
     val isToday =
@@ -270,7 +270,7 @@ private fun DayItem(days: List<DateObject>, day: DateObject, cellHeight: Dp) {
 }
 
 @Composable
-private fun TransactionItem(transactions: List<TransactionEntity>) {
+private fun TransactionItem(transactions: List<Transaction>) {
     val totalAmount = transactions.sumOf {
         if (it.goalId == null) {
             it.amount.toDouble()

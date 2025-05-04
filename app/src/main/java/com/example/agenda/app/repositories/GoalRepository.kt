@@ -1,7 +1,7 @@
 package com.example.agenda.app.repositories
 
 import com.example.agenda.app.common.repositories.CRUDRepository
-import com.example.agenda.app.entities.GoalEntity
+import com.example.agenda.domain.entities.Goal
 
-interface GoalRepository: CRUDRepository<GoalEntity> {
+interface GoalRepository: CRUDRepository<Goal> {
 }
