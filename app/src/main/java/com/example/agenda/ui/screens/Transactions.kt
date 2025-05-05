@@ -259,7 +259,9 @@ object Transactions {
                 var transferToBalanceType = remember { mutableStateOf(BalanceType.DEBIT) }
 
                 var bankBalance by remember { mutableStateOf(bank.value?.balance ?: 0f) }
+                var transferToBalance by remember { mutableStateOf(bank.value?.balance ?: 0f) }
                 var bankFormRowSize by remember { mutableStateOf(1f) }
+
                 LaunchedEffect(balanceType.value, bank.value) {
                     if (bank.value == null) return@LaunchedEffect
                     if (balanceType.value == BalanceType.DEBIT) bankBalance = bank.value!!.balance
@@ -267,6 +269,13 @@ object Transactions {
                     if (balanceType.value == BalanceType.CREDIT) bankBalance = bank.value!!.credit!!
                     currency = Money.resolve(0f, 0f)
                 }
+                LaunchedEffect(transferToBalanceType.value, transferTo.value) {
+                    if (transferTo.value == null) return@LaunchedEffect
+                    if (transferToBalanceType.value == BalanceType.DEBIT) transferToBalance = transferTo.value!!.balance
+                    if (transferTo.value!!.credit == null) return@LaunchedEffect
+                    if (transferToBalanceType.value == BalanceType.CREDIT) transferToBalance = transferTo.value!!.credit!!
+                }
+
 
                 fun checkIfBankHasBalance() {
                     if (
@@ -373,7 +382,8 @@ object Transactions {
                         Box {
                             if (transferTo.value != null && bankBalance != 0f) {
                                 val w = 30.dp
-                                val yOffset = if (transferTo.value?.credit != null) 0 else -30
+                                var yOffset = if (transferTo.value?.credit != null) 0 else -30
+                                if(bank.value?.credit == null) yOffset = 0
                                 Box(
                                     modifier = Modifier
                                         .offset(y = yOffset.dp)
@@ -493,10 +503,10 @@ object Transactions {
                                             extraInfo = if (transferTo.value != null) {
                                                 if (!Money.isZero(currency.string)) {
                                                     val money =
-                                                        transferTo.value!!.balance + currency.float
+                                                        transferToBalance + currency.float
                                                     "${
                                                         Money.format(
-                                                            transferTo.value!!.balance,
+                                                            transferToBalance,
                                                             false
                                                         )
                                                     }\n${
@@ -506,7 +516,7 @@ object Transactions {
                                                         )
                                                     }"
                                                 } else {
-                                                    Money.format(transferTo.value!!.balance, false)
+                                                    Money.format(transferToBalance, false)
                                                 }
                                             } else {
                                                 null
@@ -564,7 +574,6 @@ object Transactions {
 
 
                         if (bank.value != null) {
-
                             LaunchedEffect(type.value) {
                                 checkIfBankHasBalance()
                                 transferTo.value = null
