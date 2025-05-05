@@ -7,7 +7,7 @@ import io.objectbox.Box
 
 class BankBoxRepository(private val box: Box<Bank>) : BankRepository {
     override suspend fun create(entity: Bank) {
-        box.put(entity as Bank)
+        box.put(entity)
     }
 
     override suspend fun update(entity: Bank) {
@@ -16,7 +16,8 @@ class BankBoxRepository(private val box: Box<Bank>) : BankRepository {
                 it.copy(
                     name = entity.name,
                     balance = entity.balance,
-                    updated_at = App.Time.now()
+                    updated_at = App.Time.now(),
+                    credit = entity.credit
                 )
             )
         }
@@ -33,7 +34,8 @@ class BankBoxRepository(private val box: Box<Bank>) : BankRepository {
         return box.all
     }
 
-    override suspend fun getById(id: String): Bank {
-        return box.all.first { it.id == id }
+    override suspend fun getById(id: String): Bank? {
+        if(box.all.isEmpty()) return null
+        return box.all.firstOrNull { it.id == id }
     }
 }

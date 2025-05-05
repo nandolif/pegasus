@@ -36,6 +36,7 @@ data class Transaction(
     @Convert(converter = RecurrenceConverter::class, dbType = String::class)
     override val recurrenceType: RECURRENCE?,
     var categoryId: String,
+    val personId: String?
 ) : Entity, RecurrenceEntity {init { createMetadata();if (goalId != null) categoryId = TransactionCategories.Default.Goal.NAME_AND_ID}}
 
 

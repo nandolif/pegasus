@@ -1,6 +1,7 @@
 package com.example.agenda.ui
 
 import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.AssignmentLate
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Backup
@@ -34,6 +35,7 @@ object Theme {
         EventCategory(I.Default.AssignmentLate),
         Text(I.Default.Sort),
         Money(I.Default.Money),
-        Transfer(I.Default.KeyboardDoubleArrowRight)
+        Transfer(I.Default.KeyboardDoubleArrowRight),
+        BalanceType(I.Default.AssignmentLate),
     }
 }

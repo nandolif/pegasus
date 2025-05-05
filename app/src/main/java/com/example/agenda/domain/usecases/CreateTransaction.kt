@@ -13,32 +13,7 @@ class CreateTransaction(
     override val observers: MutableList<Observer> = mutableListOf()
 
     override suspend fun execute(input: Transaction) {
-        val transaction = Transaction(
-            day = input.day,
-            month = input.month,
-            year = input.year,
-            amount = input.amount,
-            description = input.description,
-            bankId = input.bankId,
-            goalId = input.goalId,
-            recurrenceId = input.recurrenceId,
-            ghost = input.ghost,
-            id = null,
-            created_at = null,
-            updated_at = null,
-            canceled = input.canceled,
-            canceledDay = input.canceledDay,
-            canceledMonth = input.canceledMonth,
-            canceledYear = input.canceledYear,
-            nDays = input.nDays,
-            nWeeks = input.nWeeks,
-            nMonths = input.nMonths,
-            nYears = input.nYears,
-            recurrenceType = input.recurrenceType,
-            categoryId = input.categoryId,
-        )
-
-        notifyAll(ObserverEvents.CREATE_TRANSACTION,repository.create(transaction))
+        notifyAll(ObserverEvents.CREATE_TRANSACTION,repository.create(input))
     }
 
 

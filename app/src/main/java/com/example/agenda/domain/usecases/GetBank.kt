@@ -33,12 +33,6 @@ class GetBank(
                 amount -= transaction.amount
             }
         }
-        return Bank(
-            id = bank.id,
-            created_at = bank.created_at,
-            updated_at = bank.updated_at,
-            balance = amount,
-            name = bank.name,
-        )
+        return bank.copy(balance = amount)
     }
 }

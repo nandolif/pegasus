@@ -254,6 +254,7 @@ class Backup(
             val _id = 3
             val created_at = 4
             val updated_at = 5
+            val credit = 6
 
             for (data in file.data) {
                 val bank = Bank(
@@ -262,6 +263,7 @@ class Backup(
                     id = data[id],
                     created_at = data[created_at].toLong(),
                     updated_at = data[updated_at].toLong(),
+                    credit = data[credit].toFloatOrNull(),
                 )
                 bankRepository.create(bank)
             }
@@ -293,7 +295,7 @@ class Backup(
             val nYears = 20
             val recurrenceType = 21
             val categoryId = 22
-
+            val personId = 23
 
 
             for (data in file.data) {
@@ -320,7 +322,8 @@ class Backup(
                     nMonths = data[nMonths].toIntOrNull(),
                     nYears = data[nYears].toIntOrNull(),
                     recurrenceType = if (data[recurrenceType] != "null") RECURRENCE.valueOf(data[recurrenceType]) else null,
-                    categoryId = if(categoryIdData == null || categoryIdData == "null") TransactionCategories.Default.Others.NAME_AND_ID  else categoryIdData
+                    categoryId = if (categoryIdData == null || categoryIdData == "null") TransactionCategories.Default.Others.NAME_AND_ID else categoryIdData,
+                    personId = data[personId]
                 )
                 transactionRepository.create(transaction)
             }

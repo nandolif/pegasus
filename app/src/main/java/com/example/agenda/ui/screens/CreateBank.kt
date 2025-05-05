@@ -34,7 +34,7 @@ import kotlinx.coroutines.runBlocking
 fun CreateBank(id: String? = null) {
     var name by remember { mutableStateOf("") }
     var balance by remember { mutableStateOf(0f) }
-    
+    var credit by remember { mutableStateOf(0f) }
     
     LaunchedEffect(Unit) {
         if (id != null) {
@@ -59,6 +59,13 @@ fun CreateBank(id: String? = null) {
             label = "Saldo",
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
+        OTF(
+            value = credit.toString(),
+            onValueChange = { credit = it.toFloatOrNull() ?: 0f },
+            label = "Crédito",
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+
         Spacer(Modifier.height(16.dp))
         BTN(onClick = {
             if (name.isEmpty()) return@BTN
@@ -71,7 +78,8 @@ fun CreateBank(id: String? = null) {
                             balance = balance,
                             id = null,
                             created_at = null,
-                            updated_at = null
+                            updated_at = null,
+                            credit = if(credit == 0f) null else credit
                         )
                     )
                 } else {
@@ -82,7 +90,8 @@ fun CreateBank(id: String? = null) {
                             balance = balance,
                             id = b.id,
                             created_at = b.created_at,
-                            updated_at = App.Time.now()
+                            updated_at = App.Time.now(),
+                            credit = if(credit == 0f) null else credit
                         )
                     )
                 }

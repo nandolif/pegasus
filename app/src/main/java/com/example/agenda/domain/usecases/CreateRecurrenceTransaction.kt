@@ -73,6 +73,7 @@ class CreateRecurrenceTransaction(
                     nYears = recurrenceTransaction.nYears,
                     recurrenceType = recurrenceTransaction.recurrenceType,
                     categoryId = recurrenceTransaction.categoryId,
+                    personId = recurrenceTransaction.personId,
                 )
 
                 createTransaction.execute(newTransaction)

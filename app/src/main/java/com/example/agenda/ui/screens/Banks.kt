@@ -29,6 +29,14 @@ import com.example.agenda.ui.system.Navigation
 import com.example.agenda.ui.viewmodels.BanksVM
 import com.example.agenda.ui.viewmodels.StructureVM
 
+
+object Banks {
+    object Default {
+        const val NAME_AND_ID = "Carteira"
+    }
+}
+
+
 @Preview(showBackground = true)
 @Composable
 fun Banks() {
@@ -58,7 +66,8 @@ fun Banks() {
                             .clickable {
                                 Navigation.navController.navigate(Navigation.SingleBankRoute(bank.id!!))
                             }) {
-                        TXT("${bank.name}: ${Money.format(bank.balance)}")
+                        val creditText = if(bank.credit != null) "Crédito: ${Money.format(bank.credit)}" else "/ Sem Crédito"
+                        TXT("${bank.name}: ${Money.format(bank.balance)} $creditText")
                     }
                 }
             }

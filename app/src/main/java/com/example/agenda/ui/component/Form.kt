@@ -19,12 +19,14 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.agenda.ui.Theme
 
@@ -113,8 +115,10 @@ object Form {
         placeholder: String,
         text: String?,
         extraInfo: String? = null,
+        size: Float = 1f,
+        spacerWidth: Dp? =null
     ) {
-        _Row(icon, callback) {
+        _Row(icon, callback,size, spacerWidth) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -122,14 +126,16 @@ object Form {
             ) {
                 TXT(text ?: placeholder)
                 if (extraInfo != null) {
-                    Row {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         TXT(extraInfo, color = Theme.Colors.C.color)
-                        Spacer(Modifier.width(30.dp))
-
+                        Spacer(Modifier.width(spacerWidth?: 30.dp))
                     }
                 }
-            }
 
+            }
+            if(size != 1f) {
+                VerticalDivider(thickness = 1.dp, color = Theme.Colors.C.color)
+            }
         }
     }
 
@@ -137,9 +143,12 @@ object Form {
     private fun _Row(
         icon: ImageVector,
         callback: () -> Unit,
+        size: Float = 1f,
+        spacerWidth: Dp? = null,
         content: @Composable () -> Unit,
     ) {
-        Column(Modifier.fillMaxWidth()) {
+        val space = if (spacerWidth != null) spacerWidth * 2 else 30.dp
+        Column(Modifier.fillMaxWidth(size)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -147,9 +156,9 @@ object Form {
                     .clickable { callback() }
                     .height(60.dp)
             ) {
-                Spacer(Modifier.width(30.dp))
+                Spacer(Modifier.width(space))
                 Icon(icon, contentDescription = "Icon", tint = Theme.Colors.D.color)
-                Spacer(Modifier.width(30.dp))
+                Spacer(Modifier.width(space))
                 content()
             }
             HorizontalDivider(

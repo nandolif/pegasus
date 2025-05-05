@@ -1,14 +1,26 @@
 package com.example.agenda.ui.screens
 
 import Money
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.SwapHorizontalCircle
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -16,10 +28,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.agenda.app.App
@@ -42,6 +57,7 @@ import com.example.agenda.ui.viewmodels.TransactionsVM
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
+import java.util.Stack
 
 
 object Transactions {
@@ -50,6 +66,11 @@ object Transactions {
         INCOME("Renda"),
         EXPENSE("Despesa"),
         TRANSFER("Transferência"),
+    }
+
+    enum class BalanceType(val value: String) {
+        CREDIT("Crédito"),
+        DEBIT("Débito"),
     }
 
     object Screens {
@@ -221,7 +242,6 @@ object Transactions {
 
             @Composable
             fun Screen(route: Route) {
-                var amount by remember { mutableStateOf(0f) }
                 var description by remember { mutableStateOf("") }
                 val bank = remember { mutableStateOf<Bank?>(null) }
                 val transferTo = remember { mutableStateOf<Bank?>(null) }
@@ -235,17 +255,26 @@ object Transactions {
                 val categories by vm.categories.collectAsState()
                 var currency by remember { mutableStateOf(Money.resolve(0f, 0f)) }
                 var type = remember { mutableStateOf(Type.EXPENSE) }
+                var balanceType = remember { mutableStateOf(BalanceType.DEBIT) }
+                var transferToBalanceType = remember { mutableStateOf(BalanceType.DEBIT) }
 
-                LaunchedEffect(Unit) {
+                var bankBalance by remember { mutableStateOf(bank.value?.balance ?: 0f) }
+                var bankFormRowSize by remember { mutableStateOf(1f) }
+                LaunchedEffect(balanceType.value, bank.value) {
+                    if (bank.value == null) return@LaunchedEffect
+                    if (balanceType.value == BalanceType.DEBIT) bankBalance = bank.value!!.balance
+                    if (bank.value!!.credit == null) return@LaunchedEffect
+                    if (balanceType.value == BalanceType.CREDIT) bankBalance = bank.value!!.credit!!
+                    currency = Money.resolve(0f, 0f)
                 }
 
                 fun checkIfBankHasBalance() {
                     if (
                         bank.value != null
-                        && (currency.float > bank.value!!.balance)
+                        && (currency.float > bankBalance!!)
                         && (type.value == Type.EXPENSE || type.value == Type.TRANSFER)
                     ) {
-                        currency = Money.resolve(bank.value!!.balance, bank.value!!.balance)
+                        currency = Money.resolve(bankBalance!!, bankBalance!!)
                     }
                 }
                 Column {
@@ -260,8 +289,9 @@ object Transactions {
                         Form.Input(
                             Theme.Icons.Transaction.icon,
                             placeholder = if (
-                                bank.value?.balance == 0f
+                                bankBalance == 0f
                                 && (type.value == Type.EXPENSE || type.value == Type.TRANSFER)
+                                && bank.value != null
                             ) {
                                 "Saldo Insuficiente"
                             } else {
@@ -269,7 +299,7 @@ object Transactions {
                             },
                             value = if (
                                 Money.isZero(currency.string)
-                                || (bank.value?.balance == 0f
+                                || (bankBalance == 0f
                                         && (type.value == Type.EXPENSE || type.value == Type.TRANSFER))
                             ) {
                                 ""
@@ -277,9 +307,15 @@ object Transactions {
                                 currency.string
                             },
                             {
+                                if (bank.value == null) return@Input
+
                                 currency = if (Money.isZero(currency.string) && it != "") {
-                                    Money.resolve(it.toFloat(), it.toFloat())
+                                    Money.resolve(
+                                        it.toFloatOrNull() ?: 0f,
+                                        it.toFloatOrNull() ?: 0f
+                                    )
                                 } else {
+                                    println(it)
                                     Money.resolve(it, currency.string)
                                 }
 
@@ -287,43 +323,17 @@ object Transactions {
                             },
                             KeyboardOptions(keyboardType = KeyboardType.Number)
                         )
-                        LaunchedEffect(type.value) {
-                            checkIfBankHasBalance()
-                        }
-                        val toggleTypeModal = Modal.Wrapper("Tipo de Transação") { toggle ->
-                            Modal.List<Unit> {
-                                Modal.Item(
-                                    state = type,
-                                    id = Type.EXPENSE,
-                                    callback = toggle,
-                                    text = Type.EXPENSE.value
-                                )
-                                Modal.Item(
-                                    state = type,
-                                    id = Type.INCOME,
-                                    callback = toggle,
-                                    text = Type.INCOME.value
-                                )
-                                Modal.Item(
-                                    state = type,
-                                    id = Type.TRANSFER,
-                                    callback = toggle,
-                                    text = Type.TRANSFER.value
-                                )
-                            }
-                        }
-                        Form.Row(
-                            Theme.Icons.Money.icon,
-                            toggleTypeModal,
-                            "Tipo de Transação",
-                            type.value.value
-                        )
+
 
 
                         LaunchedEffect(bank.value) {
                             checkIfBankHasBalance()
                             if (transferTo.value == bank.value) {
                                 transferTo.value = null
+                            }
+
+                            if (bank.value?.credit == null) {
+                                balanceType.value = BalanceType.DEBIT
                             }
                         }
                         val toggleBankModal = Modal.Wrapper("Selecionar Banco") { toggle ->
@@ -346,89 +356,248 @@ object Transactions {
                                     id = it,
                                     callback = toggle,
                                     text = it.name,
-                                    extraInfo = Money.format(it.balance, false)
+                                    extraInfo = if (it.credit == null) {
+                                        "Débito: " + Money.format(it.balance, false)
+                                    } else {
+                                        "Débito: ${
+                                            Money.format(
+                                                it.balance,
+                                                false
+                                            )
+                                        }\nCrédito: ${Money.format(it.credit, false)}"
+                                    }
                                 )
                             }
                         }
 
-
-                        Form.Row(
-                            Theme.Icons.Bank.icon,
-                            toggleBankModal,
-                            "Selecionar Banco",
-                            bank.value?.name,
-                            extraInfo = if (bank.value != null) {
-                                if (!Money.isZero(currency.string)) {
-                                    val money =
-                                        if (type.value == Type.TRANSFER || type.value == Type.EXPENSE) {
-                                            bank.value!!.balance - currency.float
-                                        } else {
-                                            bank.value!!.balance + currency.float
-
+                        Box {
+                            if (transferTo.value != null && bankBalance != 0f) {
+                                val w = 30.dp
+                                val yOffset = if (transferTo.value?.credit != null) 0 else -30
+                                Box(
+                                    modifier = Modifier
+                                        .offset(y = yOffset.dp)
+                                        .align(Alignment.Center)
+                                        .zIndex(10f)
+                                        .size(w)
+                                        .background(Theme.Colors.A.color, CircleShape)
+                                        .clickable {
+                                            val t = transferTo.value
+                                            val tBalanceType = transferToBalanceType.value
+                                            val b = bank.value
+                                            val bBalanceType = balanceType.value
+                                            transferTo.value = b
+                                            bank.value = t
+                                            if (bank.value?.credit == null) {
+                                                balanceType.value = tBalanceType
+                                            }
+                                            if (transferTo.value?.credit == null) {
+                                                transferToBalanceType.value = bBalanceType
+                                            }
                                         }
-                                    val sign = if (money < 0) "-" else ""
-                                    "${Money.format(bank.value!!.balance, false)} > $sign${
-                                        Money.format(
-                                            money,
-                                            false
-                                        )
-                                    }"
-                                } else {
-                                    Money.format(bank.value!!.balance, false)
+                                ) {
+                                    Icon(
+                                        Icons.Filled.SwapHorizontalCircle,
+                                        "",
+                                        tint = Theme.Colors.D.color,
+                                        modifier = Modifier.size(w)
+                                    )
                                 }
-                            } else {
-                                null
                             }
-                        )
-                        if (type.value == Type.TRANSFER && bank.value?.balance != 0f) {
-                            val toggleTransferToModal =
-                                Modal.Wrapper("Transferir para...") { toggle ->
-                                    Modal.List(
-                                        items = banks.filter { it.id != bank.value!!.id },
-                                        extraItem = {
-                                            Modal.Item(
-                                                state = remember { mutableStateOf(Unit) },
-                                                id = Unit,
-                                                callback = {
-                                                    Navigation.navController.navigate(
-                                                        Navigation.CreateBankRoute()
+                            Column {
+
+                                Row {
+
+                                    Form.Row(
+                                        Theme.Icons.Bank.icon,
+                                        toggleBankModal,
+                                        "Selecionar Banco",
+                                        bank.value?.name,
+                                        size = bankFormRowSize,
+                                        extraInfo = if (bank.value != null) {
+                                            if (!Money.isZero(currency.string)) {
+                                                val money =
+                                                    if (type.value == Type.TRANSFER || type.value == Type.EXPENSE) {
+                                                        bankBalance!! - currency.float
+                                                    } else {
+                                                        bankBalance!! + currency.float
+
+                                                    }
+                                                val sign = if (money < 0) "-" else ""
+                                                "${Money.format(bankBalance!!, false)}\n$sign${
+                                                    Money.format(
+                                                        money,
+                                                        false
                                                     )
-                                                },
-                                                text = "Criar Banco",
-                                                icon = Theme.Icons.Bank.icon,
-                                            )
-                                        },
-                                    ) {
-                                        Modal.Item(
-                                            state = transferTo,
-                                            id = it,
-                                            callback = toggle,
-                                            text = it.name,
-                                            extraInfo = Money.format(it.balance, false)
+                                                }"
+                                            } else {
+                                                Money.format(bankBalance, false)
+                                            }
+                                        } else {
+                                            null
+                                        }
+                                    )
+
+                                    bankFormRowSize = 1f
+                                    if (type.value == Type.TRANSFER && bankBalance != 0f && banks.size > 1) {
+                                        bankFormRowSize = .5f
+                                        val toggleTransferToModal =
+                                            Modal.Wrapper("Transferir para...") { toggle ->
+                                                Modal.List(
+                                                    items = banks.filter { it.id != bank.value!!.id },
+                                                    extraItem = {
+                                                        Modal.Item(
+                                                            state = remember { mutableStateOf(Unit) },
+                                                            id = Unit,
+                                                            callback = {
+                                                                Navigation.navController.navigate(
+                                                                    Navigation.CreateBankRoute()
+                                                                )
+                                                            },
+                                                            text = "Criar Banco",
+                                                            icon = Theme.Icons.Bank.icon,
+                                                        )
+                                                    },
+                                                ) {
+                                                    Modal.Item(
+                                                        state = transferTo,
+                                                        id = it,
+                                                        callback = toggle,
+                                                        text = it.name,
+                                                        extraInfo = if (it.credit == null) {
+                                                            "Débito: " + Money.format(
+                                                                it.balance,
+                                                                false
+                                                            )
+                                                        } else {
+                                                            "Débito: ${
+                                                                Money.format(
+                                                                    it.balance,
+                                                                    false
+                                                                )
+                                                            }\nCrédito: ${
+                                                                Money.format(
+                                                                    it.credit,
+                                                                    false
+                                                                )
+                                                            }"
+                                                        }
+                                                    )
+                                                }
+                                            }
+                                        Form.Row(
+                                            Theme.Icons.Transfer.icon,
+                                            toggleTransferToModal,
+                                            "Transferir para...",
+                                            transferTo.value?.name,
+                                            extraInfo = if (transferTo.value != null) {
+                                                if (!Money.isZero(currency.string)) {
+                                                    val money =
+                                                        transferTo.value!!.balance + currency.float
+                                                    "${
+                                                        Money.format(
+                                                            transferTo.value!!.balance,
+                                                            false
+                                                        )
+                                                    }\n${
+                                                        Money.format(
+                                                            money,
+                                                            false
+                                                        )
+                                                    }"
+                                                } else {
+                                                    Money.format(transferTo.value!!.balance, false)
+                                                }
+                                            } else {
+                                                null
+                                            }
                                         )
                                     }
+
                                 }
-                            Form.Row(
-                                Theme.Icons.Transfer.icon,
-                                toggleTransferToModal,
-                                "Transferir para...",
-                                transferTo.value?.name,
-                                extraInfo = if (transferTo.value != null) {
-                                    if (!Money.isZero(currency.string)) {
-                                        val money = transferTo.value!!.balance + currency.float
-                                        "${Money.format(transferTo.value!!.balance, false)} > ${
-                                            Money.format(
-                                                money,
-                                                false
-                                            )
-                                        }"
-                                    } else {
-                                        Money.format(transferTo.value!!.balance, false)
+                                Row {
+                                    val showTransferToCreditOrDebit =
+                                        transferTo.value?.credit != null && bank.value != null
+                                    if (bank.value?.credit != null) {
+                                        Form.Row(
+                                            icon = Theme.Icons.BalanceType.icon,
+                                            callback = {
+                                                if (balanceType.value == BalanceType.CREDIT) {
+                                                    balanceType.value = BalanceType.DEBIT
+                                                } else {
+                                                    balanceType.value = BalanceType.CREDIT
+                                                }
+                                            },
+                                            placeholder = "Débito ou Crédito",
+                                            text = balanceType.value.value,
+                                            size = if (transferTo.value?.credit != null) bankFormRowSize else 1f
+                                        )
+
+                                    } else if (showTransferToCreditOrDebit) {
+                                        Form.Row(
+                                            icon = Theme.Icons.BalanceType.icon,
+                                            callback = {},
+                                            placeholder = "Débito ou Crédito",
+                                            text = BalanceType.DEBIT.value,
+                                            size = if (transferTo.value?.credit != null) bankFormRowSize else 1f,
+                                        )
                                     }
-                                } else {
-                                    null
+                                    if (showTransferToCreditOrDebit) {
+                                        Form.Row(
+                                            icon = Theme.Icons.Transfer.icon,
+                                            callback = {
+                                                if (transferToBalanceType.value == BalanceType.CREDIT) {
+                                                    transferToBalanceType.value = BalanceType.DEBIT
+                                                } else {
+                                                    transferToBalanceType.value = BalanceType.CREDIT
+                                                }
+                                            },
+                                            placeholder = "Débito ou Crédito",
+                                            text = transferToBalanceType.value.value,
+                                        )
+                                    }
+
                                 }
+                            }
+
+                        }
+
+
+                        if (bank.value != null) {
+
+                            LaunchedEffect(type.value) {
+                                checkIfBankHasBalance()
+                                transferTo.value = null
+                            }
+                            val toggleTypeModal = Modal.Wrapper("Tipo de Transação") { toggle ->
+                                Modal.List<Unit> {
+                                    Modal.Item(
+                                        state = type,
+                                        id = Type.EXPENSE,
+                                        callback = toggle,
+                                        text = Type.EXPENSE.value
+                                    )
+                                    Modal.Item(
+                                        state = type,
+                                        id = Type.INCOME,
+                                        callback = toggle,
+                                        text = Type.INCOME.value
+                                    )
+                                    Modal.Item(
+                                        state = type,
+                                        id = Type.TRANSFER,
+                                        callback = toggle,
+                                        text = Type.TRANSFER.value
+                                    )
+                                }
+                            }
+                            Form.Row(
+                                Theme.Icons.Money.icon,
+                                toggleTypeModal,
+                                "Tipo de Transação",
+                                type.value.value
                             )
+
                         }
                         val toggleDateDialog = DateDialog.Component(date)
                         Form.Row(

@@ -19,6 +19,7 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(Unit) {
                 App.Repositories.transactionCategoryRepository.setup()
                 App.Repositories.eventCategoryRepository.setup()
+                App.Repositories.bankRepository.setup()
             }
         }
     }
