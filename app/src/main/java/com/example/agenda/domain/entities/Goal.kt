@@ -1,5 +1,6 @@
 package com.example.agenda.domain.entities
 
+import com.example.agenda.app.MONEY
 import com.example.agenda.app.common.Entity
 import io.objectbox.annotation.Entity as E
 import io.objectbox.annotation.Id
@@ -12,7 +13,7 @@ data class Goal(
     override var created_at: Long?,
     override var updated_at: Long?,
     val achieved: Boolean,
-    val amount: Float,
+    val amount: MONEY,
     val title: String,
-    val actualAmount: Float?,
+    val actualAmount: MONEY?,
 ) : Entity {init {createMetadata()}}
