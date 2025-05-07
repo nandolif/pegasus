@@ -28,7 +28,7 @@ import kotlinx.coroutines.runBlocking
 @Composable
 fun CreateGoal(vm: GoalsVM = viewModel()) {
     var title by remember { mutableStateOf("") }
-    var amount by remember { mutableStateOf(0f) }
+    var amount by remember { mutableStateOf(Money.ZERO) }
     val structureVM: StructureVM = viewModel()
     App.UI.title = "Criar Meta"
     Column {
@@ -44,14 +44,14 @@ fun CreateGoal(vm: GoalsVM = viewModel()) {
             )
             OTF(
                 value = amount.toString(),
-                onValueChange = { amount = it.toFloatOrNull() ?: 0f },
+                onValueChange = { amount = it.toDoubleOrNull() ?: Money.ZERO },
                 label = "Valor",
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
             Spacer(Modifier.height(16.dp))
             BTN(onClick = {
                 if (title.isEmpty()) return@BTN
-                if (amount == 0f) return@BTN
+                if (amount == Money.ZERO) return@BTN
 
                 runBlocking {
                     App.UseCases.createGoal.execute(

@@ -46,10 +46,10 @@ fun Goals() {
                             }) {
 
                         TXT(
-                            "${goal.title}: ${Money.format(goal.amount)} [Alcançado: ${
-                                Money.format(
+                            "${goal.title}: ${Money.resolve(goal.amount).text} [Alcançado: ${
+                                Money.resolve(
                                     goal.actualAmount!!,
-                                )
+                                ).text
                             }]"
                         )
                     }

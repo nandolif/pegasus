@@ -14,15 +14,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         installSplashScreen()
         setContent {
-            Test()
-//            App.UI.context = this
-//            App.UI.notify.NotifyComponent()
-//            Navigation.Host()
-//            LaunchedEffect(Unit) {
-//                App.Repositories.transactionCategoryRepository.setup()
-//                App.Repositories.eventCategoryRepository.setup()
-//                App.Repositories.bankRepository.setup()
-//            }
+            App.UI.context = this
+            App.UI.notify.NotifyComponent()
+            Navigation.Host()
+            LaunchedEffect(Unit) {
+                App.Repositories.transactionCategoryRepository.setup()
+                App.Repositories.eventCategoryRepository.setup()
+                App.Repositories.bankRepository.setup()
+            }
         }
     }
 }

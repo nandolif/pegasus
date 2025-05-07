@@ -66,8 +66,8 @@ fun Banks() {
                             .clickable {
                                 Navigation.navController.navigate(Navigation.SingleBankRoute(bank.id!!))
                             }) {
-                        val creditText = if(bank.credit != null) "Crédito: ${Money.format(bank.credit)}" else "/ Sem Crédito"
-                        TXT("${bank.name}: ${Money.format(bank.balance)} $creditText")
+                        val creditText = if(bank.credit != null) "Crédito: ${Money.resolve(bank.credit).text}" else "/ Sem Crédito"
+                        TXT("${bank.name}: ${Money.resolve(bank.balance).text} $creditText")
                     }
                 }
             }

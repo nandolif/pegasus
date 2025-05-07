@@ -33,8 +33,8 @@ import kotlinx.coroutines.runBlocking
 @Composable
 fun CreateBank(id: String? = null) {
     var name by remember { mutableStateOf("") }
-    var balance by remember { mutableStateOf(0f) }
-    var credit by remember { mutableStateOf(0f) }
+    var balance by remember { mutableStateOf(Money.ZERO) }
+    var credit by remember { mutableStateOf(Money.ZERO) }
     
     LaunchedEffect(Unit) {
         if (id != null) {
@@ -55,13 +55,13 @@ fun CreateBank(id: String? = null) {
         OTF(value = name, onValueChange = { name = it }, label = "Nome")
         OTF(
             value = balance.toString(),
-            onValueChange = { balance = it.toFloatOrNull() ?: 0f },
+            onValueChange = { balance = it.toDoubleOrNull() ?: Money.ZERO },
             label = "Saldo",
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
         OTF(
             value = credit.toString(),
-            onValueChange = { credit = it.toFloatOrNull() ?: 0f },
+            onValueChange = { credit = it.toDoubleOrNull() ?: Money.ZERO },
             label = "Crédito",
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
@@ -79,7 +79,7 @@ fun CreateBank(id: String? = null) {
                             id = null,
                             created_at = null,
                             updated_at = null,
-                            credit = if(credit == 0f) null else credit
+                            credit = if(credit == Money.ZERO) null else credit
                         )
                     )
                 } else {
@@ -91,7 +91,7 @@ fun CreateBank(id: String? = null) {
                             id = b.id,
                             created_at = b.created_at,
                             updated_at = App.Time.now(),
-                            credit = if(credit == 0f) null else credit
+                            credit = if(credit == Money.ZERO) null else credit
                         )
                     )
                 }

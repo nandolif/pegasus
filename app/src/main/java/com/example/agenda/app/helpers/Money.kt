@@ -1,5 +1,3 @@
-typealias MONEY = Double
-
 object Money {
     const val CURRENCY_SYMBOL = "R$"
     const val HUNDRED_DELIMITER = "."
@@ -7,71 +5,32 @@ object Money {
     const val ZERO = 0.0
 
     data class Currency(
-        val value: MONEY,
+        val value: Double,
         val text: String,
     )
 
 
-    fun convert(value: Any): MONEY? {
-        if (value is MONEY) return value
-
-        if (value is String) {
-            return value.toDoubleOrNull() ?: ZERO
+    fun resolve(value: Any, withCurrency: Boolean = false): Currency {
+        var v = value
+        if (v is Double && v.toString().split(".")[1].length == 1) {
+            v = v.toString() + "0"
         }
-        return null
-    }
+        var finalValue = v.toString().filter { it.isDigit() }.toIntOrNull()?.toDouble() ?: ZERO
+        finalValue /= 100
+        var text = if (finalValue == ZERO) "0.00" else finalValue.toString()
+        val valueSplit = text.split(".")
+        val hundreds = valueSplit[0].reversed().mapIndexed { index, c ->
+            if (index % 3 == 0 && index != 0) {
+                c + HUNDRED_DELIMITER
+            } else c
+        }.reversed().joinToString("")
+        val cents = if (valueSplit[1].length <= 1) valueSplit[1] + "0" else valueSplit[1]
 
+        text = hundreds + CENTS_DELIMITER + cents
 
-    fun isZero(value: Any): Boolean {
-        val m = resolve(value, value)
-        return m.value == ZERO
-
-    }
-
-    fun format(value: Any, withCurrency: Boolean = true): String {
-        return if (withCurrency) CURRENCY_SYMBOL + resolve(value, value).text else resolve(
-            value,
-            value
-        ).text
-    }
-
-    fun resolve(newValue: Any, oldValue: Any): Currency {
-        var v1 = newValue.toString()
-        var v2 = oldValue.toString()
-
-        fun filter(value: String): String {
-            return value.filter { it.isDigit() }
-        }
-
-
-        v1 = filter(v1)
-        v2 = filter(v2)
-
-        val number1 = v1.toInt()
-        val number2 = v2.toInt()
-        var value = 0.0
-
-        if(number1 > number2) {
-            value = (number1 * 10).toDouble() / 100
-        } else {
-            value = (number1 / 10).toDouble() / 100
-        }
-
-        var text = value.toString()
-
-        val textSplit = text.split(".")
-        val t = textSplit[0].mapIndexed({index, char -> {
-            if(index % 3 == 0 && index != 0) {
-                char+HUNDRED_DELIMITER
-            } else {
-                char
-            }
-        }}).joinToString("")
-
-        text = t + CENTS_DELIMITER + textSplit[1]
         return Currency(
-            value = value,
-            text = text
+            value = finalValue,
+            text = if (withCurrency) CURRENCY_SYMBOL + text else text
         )
     }
 }

@@ -1,6 +1,5 @@
 package com.example.agenda.domain.entities
 
-import MONEY
 import com.example.agenda.app.common.Entity
 import com.example.agenda.app.common.RECURRENCE
 import com.example.agenda.app.common.RecurrenceEntity
@@ -18,7 +17,7 @@ data class Transaction(
     val day: Int,
     val month: Int,
     val year: Int,
-    val amount: MONEY,
+    val amount: Double,
     val description: String,
     override var created_at: Long?,
     override var updated_at: Long?,

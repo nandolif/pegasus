@@ -26,6 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.agenda.ui.Theme
@@ -37,9 +39,9 @@ object Form {
             content()
         }
     }
-
+object Input{
     @Composable
-    fun Input(
+    fun Text(
         icon: ImageVector,
         placeholder: String,
         value: String,
@@ -53,7 +55,7 @@ object Form {
                     .height(60.dp)
                     .offset(x = (-16).dp),
                 keyboardOptions = keyboardOptions,
-                value = value,
+                value =value,
                 onValueChange = onValueChange,
                 placeholder = { TXT(placeholder) },
                 colors = TextFieldColors(
@@ -107,6 +109,77 @@ object Form {
             )
         }
     }
+    @Composable
+    fun Money(
+        icon: ImageVector,
+        placeholder: String,
+        value: TextFieldValue,
+        onValueChange: (String) -> Unit,
+        keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    ) {
+        _Row(icon, {}) {
+            TextField(
+                singleLine = true,
+                modifier = Modifier
+                    .height(60.dp)
+                    .offset(x = (-16).dp),
+                keyboardOptions = keyboardOptions,
+                value =value,
+                onValueChange = {onValueChange(it.text)},
+                placeholder = { TXT(placeholder) },
+                colors = TextFieldColors(
+                    focusedTextColor = Theme.Colors.D.color,
+                    unfocusedTextColor = Theme.Colors.D.color,
+                    disabledTextColor = Theme.Colors.D.color,
+                    errorTextColor = Theme.Colors.D.color,
+                    focusedContainerColor = Theme.Colors.A.color,
+                    unfocusedContainerColor = Theme.Colors.A.color,
+                    disabledContainerColor = Theme.Colors.A.color,
+                    errorContainerColor = Theme.Colors.A.color,
+                    cursorColor = Theme.Colors.D.color,
+                    errorCursorColor = Theme.Colors.D.color,
+                    textSelectionColors = TextSelectionColors(
+                        handleColor = Theme.Colors.A.color,
+                        backgroundColor = Theme.Colors.A.color
+                    ),
+                    focusedIndicatorColor = Theme.Colors.A.color,
+                    unfocusedIndicatorColor = Theme.Colors.A.color,
+                    disabledIndicatorColor = Theme.Colors.A.color,
+                    errorIndicatorColor = Theme.Colors.A.color,
+                    focusedLeadingIconColor = Theme.Colors.A.color,
+                    unfocusedLeadingIconColor = Theme.Colors.A.color,
+                    disabledLeadingIconColor = Theme.Colors.A.color,
+                    errorLeadingIconColor = Theme.Colors.A.color,
+                    focusedTrailingIconColor = Theme.Colors.A.color,
+                    unfocusedTrailingIconColor = Theme.Colors.A.color,
+                    disabledTrailingIconColor = Theme.Colors.A.color,
+                    errorTrailingIconColor = Theme.Colors.A.color,
+                    focusedLabelColor = Theme.Colors.A.color,
+                    unfocusedLabelColor = Theme.Colors.A.color,
+                    disabledLabelColor = Theme.Colors.A.color,
+                    errorLabelColor = Theme.Colors.A.color,
+                    focusedPlaceholderColor = Theme.Colors.D.color,
+                    unfocusedPlaceholderColor = Theme.Colors.D.color,
+                    disabledPlaceholderColor = Theme.Colors.D.color,
+                    errorPlaceholderColor = Theme.Colors.D.color,
+                    focusedSupportingTextColor = Theme.Colors.A.color,
+                    unfocusedSupportingTextColor = Theme.Colors.A.color,
+                    disabledSupportingTextColor = Theme.Colors.A.color,
+                    errorSupportingTextColor = Theme.Colors.A.color,
+                    focusedPrefixColor = Theme.Colors.A.color,
+                    unfocusedPrefixColor = Theme.Colors.A.color,
+                    disabledPrefixColor = Theme.Colors.A.color,
+                    errorPrefixColor = Theme.Colors.A.color,
+                    focusedSuffixColor = Theme.Colors.A.color,
+                    unfocusedSuffixColor = Theme.Colors.A.color,
+                    disabledSuffixColor = Theme.Colors.A.color,
+                    errorSuffixColor = Theme.Colors.A.color
+                )
+            )
+        }
+    }
+}
+
 
     @Composable
     fun Row(

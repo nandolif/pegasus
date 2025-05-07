@@ -12,7 +12,7 @@ class GetGoal(
     override suspend fun execute(input: String): Goal {
         val goal = goalRepository.getById(input)
         val allTransactions = transactionRepository.getByGoal(goal!!)
-        var actualAmount = 0f
+        var actualAmount = Money.ZERO
 
         allTransactions.forEach {
             if (!it.ghost) {

@@ -279,7 +279,7 @@ private fun TransactionItem(transactions: List<Transaction>) {
 
         }
     }
-    ItemContent(Money.format(totalAmount.toFloat()), totalAmount > 0)
+    ItemContent(Money.resolve(totalAmount).text, totalAmount > 0)
 }
 
 @Composable

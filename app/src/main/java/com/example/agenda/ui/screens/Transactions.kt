@@ -1,6 +1,5 @@
 package com.example.agenda.ui.screens
 
-import MONEY
 import Money
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,7 +30,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.ViewModel
@@ -58,14 +59,13 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 
 
-
 @Composable
-fun Test(){
+fun Test() {
     var currency by remember { mutableStateOf(Money.ZERO) }
     TextField(
-        value = Money.resolve(currency,currency).text,
+        value = Money.resolve(currency).text,
         onValueChange = {
-            currency = Money.resolve(it, currency).value
+            currency = Money.resolve(it).value
         }
     )
 }
@@ -86,7 +86,7 @@ object Transactions {
     object Screens {
         object MonthlyTransactions {
             data class Data(
-                val total: MONEY,
+                val total: Double,
                 val percentage: Double,
                 val category: TransactionCategory,
                 val transactions: List<Transaction>,
@@ -94,7 +94,7 @@ object Transactions {
 
             data class DataList(
                 val date: DayMonthYearObj,
-                val total: MONEY,
+                val total: Double,
                 val data: List<Data>,
             )
 
@@ -226,12 +226,12 @@ object Transactions {
                             Pager.Component(pagerState) {
                                 Column {
                                     TXT(Date.geMonthText(cp.date))
-                                    TXT(Money.format(cp.total))
+                                    TXT(Money.resolve(cp.total).text)
                                     Spacer(Modifier.height(16.dp))
                                     LazyColumn {
                                         items(cp.data.sortedByDescending { it.percentage }) {
                                             TXT(it.category.name)
-                                            TXT(Money.format(it.total))
+                                            TXT(Money.resolve(it.total).text)
                                             TXT(it.percentage.toString())
                                         }
                                     }
@@ -263,49 +263,80 @@ object Transactions {
                 val banks by vm.banks.collectAsState()
                 val goals by vm.goals.collectAsState()
                 val categories by vm.categories.collectAsState()
-                var currency by remember { mutableStateOf(Money.resolve(Money.ZERO, Money.ZERO)) }
+                var currency by remember { mutableStateOf(Money.resolve(Money.ZERO)) }
+                var currencyInput by remember {
+                    mutableStateOf(
+                        TextFieldValue(
+                            text = currency.text,
+                            selection = TextRange(currency.text.length)
+                        )
+                    )
+                }
                 var type = remember { mutableStateOf(Type.EXPENSE) }
                 var balanceType = remember { mutableStateOf(BalanceType.DEBIT) }
                 var transferToBalanceType = remember { mutableStateOf(BalanceType.DEBIT) }
 
                 var bankBalance by remember { mutableStateOf(bank.value?.balance ?: Money.ZERO) }
-                var transferToBalance by remember { mutableStateOf(bank.value?.balance ?: Money.ZERO) }
+                var transferToBalance by remember {
+                    mutableStateOf(
+                        bank.value?.balance ?: Money.ZERO
+                    )
+                }
                 var bankFormRowSize by remember { mutableStateOf(1f) }
-
-                LaunchedEffect(balanceType.value, bank.value) {
-                    if (bank.value == null) return@LaunchedEffect
-                    if (balanceType.value == BalanceType.DEBIT) bankBalance = bank.value!!.balance
-                    if (bank.value!!.credit == null) return@LaunchedEffect
-                    if (balanceType.value == BalanceType.CREDIT) bankBalance = bank.value!!.credit!!
-                    currency = Money.resolve(Money.ZERO, Money.ZERO)
-                }
-                LaunchedEffect(transferToBalanceType.value, transferTo.value) {
-                    if (transferTo.value == null) return@LaunchedEffect
-                    if (transferToBalanceType.value == BalanceType.DEBIT) transferToBalance = transferTo.value!!.balance
-                    if (transferTo.value!!.credit == null) return@LaunchedEffect
-                    if (transferToBalanceType.value == BalanceType.CREDIT) transferToBalance = transferTo.value!!.credit!!
-                }
-
-
                 fun checkIfBankHasBalance() {
                     if (
                         bank.value != null
                         && (currency.value > bankBalance!!)
                         && (type.value == Type.EXPENSE || type.value == Type.TRANSFER)
                     ) {
-                        currency = Money.resolve(bankBalance!!, bankBalance!!)
+                        currency = Money.resolve(bankBalance!!)
                     }
                 }
+
+                LaunchedEffect(currency) {
+                    currencyInput = TextFieldValue(
+                        text = currency.text,
+                        selection = TextRange(currency.text.length)
+                    )
+                }
+
+                LaunchedEffect(balanceType.value, bank.value) {
+                    if (bank.value == null) return@LaunchedEffect
+                    if (balanceType.value == BalanceType.DEBIT) bankBalance = bank.value!!.balance
+                    if (bank.value!!.credit == null) return@LaunchedEffect
+                    if (balanceType.value == BalanceType.CREDIT) bankBalance = bank.value!!.credit!!
+                    currency = Money.resolve(Money.ZERO)
+                }
+                LaunchedEffect(transferToBalanceType.value, transferTo.value) {
+                    if (transferTo.value == null) return@LaunchedEffect
+                    if (transferToBalanceType.value == BalanceType.DEBIT) transferToBalance =
+                        transferTo.value!!.balance
+                    if (transferTo.value!!.credit == null) return@LaunchedEffect
+                    if (transferToBalanceType.value == BalanceType.CREDIT) transferToBalance =
+                        transferTo.value!!.credit!!
+                }
+                LaunchedEffect(bank.value) {
+                    checkIfBankHasBalance()
+                    if (transferTo.value == bank.value) {
+                        transferTo.value = null
+                    }
+
+                    if (bank.value?.credit == null) {
+                        balanceType.value = BalanceType.DEBIT
+                    }
+                }
+
+
                 Column {
                     Header(structureVM)
                     Form.Wrapper {
-                        Form.Input(
+                        Form.Input.Text(
                             Theme.Icons.Text.icon,
                             "Adicionar Descrição",
                             description,
                             { description = it }
                         )
-                        Form.Input(
+                        Form.Input.Money(
                             Theme.Icons.Transaction.icon,
                             placeholder = if (
                                 bankBalance == Money.ZERO
@@ -317,27 +348,25 @@ object Transactions {
                                 "Adicionar Valor"
                             },
                             value = if (
-                                Money.isZero(currency.text)
+                                currency.value == Money.ZERO
                                 || (bankBalance == Money.ZERO
                                         && (type.value == Type.EXPENSE || type.value == Type.TRANSFER))
                             ) {
-                                ""
+                                currencyInput = currencyInput.copy(
+                                    text = "",
+                                )
+                                currencyInput
                             } else {
-                                currency.text
+
+                                currencyInput
                             },
                             {
-                                if (bank.value == null) return@Input
-
-                                currency = if (Money.isZero(currency.text) && it != "") {
-                                    Money.resolve(
-                                        Money.convert(it) ?: Money.ZERO,
-                                        Money.convert(it) ?: Money.ZERO
-                                    )
-                                } else {
-                                    println(it)
-                                    Money.resolve(it, currency.text)
-                                }
-
+                                if (bank.value == null) return@Money
+                                currency = Money.resolve(it)
+                                currencyInput = currencyInput.copy(
+                                    text = currency.text,
+                                    selection = TextRange(currency.text.length)
+                                )
                                 checkIfBankHasBalance()
                             },
                             KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -345,16 +374,7 @@ object Transactions {
 
 
 
-                        LaunchedEffect(bank.value) {
-                            checkIfBankHasBalance()
-                            if (transferTo.value == bank.value) {
-                                transferTo.value = null
-                            }
 
-                            if (bank.value?.credit == null) {
-                                balanceType.value = BalanceType.DEBIT
-                            }
-                        }
                         val toggleBankModal = Modal.Wrapper("Selecionar Banco") { toggle ->
                             Modal.List(items = banks, extraItem = {
                                 Modal.Item(
@@ -376,14 +396,11 @@ object Transactions {
                                     callback = toggle,
                                     text = it.name,
                                     extraInfo = if (it.credit == null) {
-                                        "Débito: " + Money.format(it.balance, false)
+                                        "Débito: " + Money.resolve(it.balance).text
                                     } else {
                                         "Débito: ${
-                                            Money.format(
-                                                it.balance,
-                                                false
-                                            )
-                                        }\nCrédito: ${Money.format(it.credit, false)}"
+                                            Money.resolve(it.balance).text
+                                        }\nCrédito: ${Money.resolve(it.credit).text}"
                                     }
                                 )
                             }
@@ -393,7 +410,7 @@ object Transactions {
                             if (transferTo.value != null && bankBalance != Money.ZERO) {
                                 val w = 30.dp
                                 var yOffset = if (transferTo.value?.credit != null) 0 else -30
-                                if(bank.value?.credit == null) yOffset = 0
+                                if (bank.value?.credit == null) yOffset = 0
                                 Box(
                                     modifier = Modifier
                                         .offset(y = yOffset.dp)
@@ -435,23 +452,22 @@ object Transactions {
                                         bank.value?.name,
                                         size = bankFormRowSize,
                                         extraInfo = if (bank.value != null) {
-                                            if (!Money.isZero(currency.text)) {
+                                            if (currency.value != Money.ZERO) {
                                                 val money =
-                                                    if (type.value == Type.TRANSFER || type.value == Type.EXPENSE) {
-                                                        bankBalance!! - currency.value
+                                                    if (type.value != Type.INCOME) {
+                                                        bankBalance - currency.value
                                                     } else {
-                                                        bankBalance!! + currency.value
+                                                        bankBalance + currency.value
 
                                                     }
+
+                                                println("money: $money")
                                                 val sign = if (money < 0) "-" else ""
-                                                "${Money.format(bankBalance!!, false)}\n$sign${
-                                                    Money.format(
-                                                        money,
-                                                        false
-                                                    )
+                                                "${Money.resolve(bankBalance).text}\n$sign${
+                                                    Money.resolve(money).text
                                                 }"
                                             } else {
-                                                Money.format(bankBalance, false)
+                                                Money.resolve(bankBalance).text
                                             }
                                         } else {
                                             null
@@ -485,21 +501,12 @@ object Transactions {
                                                         callback = toggle,
                                                         text = it.name,
                                                         extraInfo = if (it.credit == null) {
-                                                            "Débito: " + Money.format(
-                                                                it.balance,
-                                                                false
-                                                            )
+                                                            "Débito: " + Money.resolve(it.balance).text
                                                         } else {
                                                             "Débito: ${
-                                                                Money.format(
-                                                                    it.balance,
-                                                                    false
-                                                                )
+                                                                Money.resolve(it.balance).text
                                                             }\nCrédito: ${
-                                                                Money.format(
-                                                                    it.credit,
-                                                                    false
-                                                                )
+                                                                Money.resolve(it.credit).text
                                                             }"
                                                         }
                                                     )
@@ -511,22 +518,16 @@ object Transactions {
                                             "Transferir para...",
                                             transferTo.value?.name,
                                             extraInfo = if (transferTo.value != null) {
-                                                if (!Money.isZero(currency.text)) {
+                                                if (currency.value != Money.ZERO) {
                                                     val money =
                                                         transferToBalance + currency.value
                                                     "${
-                                                        Money.format(
-                                                            transferToBalance,
-                                                            false
-                                                        )
+                                                        Money.resolve(transferToBalance).text
                                                     }\n${
-                                                        Money.format(
-                                                            money,
-                                                            false
-                                                        )
+                                                        Money.resolve(money).text
                                                     }"
                                                 } else {
-                                                    Money.format(transferToBalance, false)
+                                                    Money.resolve(transferToBalance).text
                                                 }
                                             } else {
                                                 null

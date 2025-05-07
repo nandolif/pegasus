@@ -9,11 +9,11 @@ interface BankRepository: CRUDRepository<Bank> {
     fun setup() {
         _setup(
             Banks.Default.NAME_AND_ID,
-            balance = 0f
+            balance = Money.ZERO
         )
     }
 
-    private fun _setup(name: String, balance: Float) {
+    private fun _setup(name: String, balance: Double) {
         runBlocking {
             if (getById(name) == null) {
                 create(

@@ -259,11 +259,11 @@ class Backup(
             for (data in file.data) {
                 val bank = Bank(
                     name = data[name],
-                    balance = data[balance].toFloat(),
+                    balance = data[balance].toDouble(),
                     id = data[id],
                     created_at = data[created_at].toLong(),
                     updated_at = data[updated_at].toLong(),
-                    credit = data[credit].toFloatOrNull(),
+                    credit = data[credit].toDoubleOrNull(),
                 )
                 bankRepository.create(bank)
             }
@@ -305,7 +305,7 @@ class Backup(
                     day = data[day].toInt(),
                     month = data[month].toInt(),
                     year = data[year].toInt(),
-                    amount = data[amount].toFloat(),
+                    amount = data[amount].toDouble(),
                     description = data[description],
                     created_at = data[created_at].toLong(),
                     updated_at = data[updated_at].toLong(),
@@ -348,7 +348,7 @@ class Backup(
                     created_at = data[created_at].toLong(),
                     updated_at = data[updated_at].toLong(),
                     achieved = data[achieved].toBoolean(),
-                    amount = data[amount].toFloat(),
+                    amount = data[amount].toDouble(),
                     title = data[title],
                     actualAmount = null,
                 )
