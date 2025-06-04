@@ -7,9 +7,12 @@ import com.example.agenda.app.common.repositories.RecurrenceRepository
 import com.example.agenda.domain.entities.Bank
 import com.example.agenda.domain.entities.Goal
 import com.example.agenda.domain.entities.Transaction
+import com.example.agenda.domain.objects.DayMonthYearObj
+import com.example.agenda.domain.objects.TransactionWithData
 
 interface TransactionRepository : DateRepository<Transaction>,
     CRUDRepository<Transaction>, RecurrenceRepository<Transaction>, CategoryRepository {
    suspend fun getByBank(bank: Bank): List<Transaction>
    suspend fun getByGoal(goal: Goal): List<Transaction>
+   suspend fun getByMonthAndYearWithData(date: DayMonthYearObj): List<TransactionWithData>
 }

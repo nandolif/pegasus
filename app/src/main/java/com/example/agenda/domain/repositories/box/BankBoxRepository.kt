@@ -6,6 +6,10 @@ import com.example.agenda.domain.entities.Bank
 import io.objectbox.Box
 
 class BankBoxRepository(private val box: Box<Bank>) : BankRepository {
+    override fun onlyWithCredit(): List<Bank> {
+        return box.all.filter { it.creditLimit != null && it.creditSpent != null }
+    }
+
     override suspend fun create(entity: Bank) {
         box.put(entity)
     }
@@ -17,7 +21,8 @@ class BankBoxRepository(private val box: Box<Bank>) : BankRepository {
                     name = entity.name,
                     balance = entity.balance,
                     updated_at = App.Time.now(),
-                    credit = entity.credit
+                    creditLimit = entity.creditLimit,
+                    creditSpent = entity.creditSpent
                 )
             )
         }
@@ -35,7 +40,7 @@ class BankBoxRepository(private val box: Box<Bank>) : BankRepository {
     }
 
     override suspend fun getById(id: String): Bank? {
-        if(box.all.isEmpty()) return null
+        if (box.all.isEmpty()) return null
         return box.all.firstOrNull { it.id == id }
     }
 }

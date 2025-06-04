@@ -27,7 +27,7 @@ import com.example.agenda.ui.Theme
 object DateDialog {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun Component(date: MutableState<DayMonthYearObj?>): () -> Unit {
+    fun Component(date: MutableState<DayMonthYearObj>): () -> Unit {
         var isDialogVisible by remember { mutableStateOf(false) }
 
         fun toggle() {

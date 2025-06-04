@@ -1,0 +1,208 @@
+package com.example.agenda.ui.component.form
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.agenda.app.App
+import com.example.agenda.app.common.EventType
+import com.example.agenda.app.common.RECURRENCE
+import com.example.agenda.app.helps.Date
+import com.example.agenda.domain.entities.Event
+import com.example.agenda.domain.objects.DayMonthYearObj
+import com.example.agenda.ui.Theme
+import com.example.agenda.ui.component.BTN
+import com.example.agenda.ui.component.BTNType
+import com.example.agenda.ui.component.BottomSheet
+import com.example.agenda.ui.component.DateDialog
+import com.example.agenda.ui.component.EDM
+import com.example.agenda.ui.component.OTF
+import com.example.agenda.ui.component.TXT
+import com.example.agenda.ui.screens.EventCategories
+import kotlinx.coroutines.runBlocking
+
+@Composable
+fun CreateEventForm(eventDate: MutableState<DayMonthYearObj>, callback: () -> Unit): () -> Unit {
+    var description by remember { mutableStateOf("") }
+    var categoryId by remember { mutableStateOf("") }
+    val vm: EventCategories.Screens.AllEventCategories.VM = viewModel()
+    val eventCategories by vm.eventCategories.collectAsState()
+
+    var dateState = remember {
+        mutableStateOf(eventDate)
+    }
+    var date by dateState
+    val toggleDateDialog = DateDialog.Component(dateState.value)
+
+    val toggle = BottomSheet.Wrapper { t ->
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            TXT("Criar Evento")
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OTF(
+                value = description,
+                onValueChange = { description = it },
+                label = "Descrição",
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+            var select by remember { mutableStateOf(EventType.REMINDER) }
+            EDM<EventType>(
+                selected = select,
+                onSelectedChange = { select = it },
+                label = "Escolha uma opção",
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            var select2 by remember { mutableStateOf<RECURRENCE?>(null) }
+
+            Row(Modifier.fillMaxWidth()) {
+                EDM<RECURRENCE>(
+                    selected = select2,
+                    onSelectedChange = { select2 = it },
+                    label = "Recorrência",
+                )
+
+                if (select2 != null) {
+                    Box(
+                        modifier = Modifier
+                            .clickable {
+                                select2 = null
+                            }
+                            .padding(4.dp)
+                            .border(2.dp, Theme.Colors.D.color, shape = RoundedCornerShape(4.dp))
+                    ) {
+                        Icon(
+                            Icons.Default.Close,
+                            contentDescription = "Close",
+                            tint = Theme.Colors.D.color
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+            var quantity by remember { mutableIntStateOf(7) }
+
+            if (select2 != null) {
+                OTF(
+                    ph = "Quantidade",
+                    label = "Quantidade",
+                    value = quantity.toString(),
+                    onValueChange = {
+                        if (it.toIntOrNull() != null) quantity = it.toInt() else quantity = 0
+                    },
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Box(
+                modifier = Modifier
+                    .clickable {
+                        toggleDateDialog()
+                    }
+                    .fillMaxWidth()) {
+
+                OTF(
+                    value = Date.dayMonthYearToString(date.value),
+                    onValueChange = { date.value = Date.longToDayMonthYear(it.toLong()) },
+                    label = "Data",
+                    ro = true,
+                )
+
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            LazyColumn {
+                items(eventCategories) {
+                    Column {
+                        Box(
+                            Modifier.background(Color(it.backgroundColor.toULong()))
+                        ) {
+                            TXT(it.name, Color(it.textColor.toULong()))
+                        }
+                        BTN(if (categoryId == it.id) "Desmarcar" else "Marcar", onClick = {
+                            categoryId = it.id!!
+                        }, type = if (categoryId == it.id) BTNType.SECONDARY else BTNType.PRIMARY)
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+
+
+            BTN(onClick = {
+                if (date == null) return@BTN
+                if (description.isEmpty()) return@BTN
+                if (select2 != null && quantity == 0) return@BTN
+                if (categoryId == "") return@BTN
+
+                runBlocking {
+                    App.UseCases.createEvent.execute(
+                        input = Event(
+                            day = date.value.day,
+                            month = date.value.month,
+                            year = date.value.year,
+                            description = description,
+                            id = null,
+                            created_at = null,
+                            updated_at = null,
+                            recurrenceType = select2,
+                            nDays = if (select2 == RECURRENCE.EVERY_N_DAYS) quantity else null,
+                            nWeeks = if (select2 == RECURRENCE.EVERY_N_WEAK) quantity else null,
+                            nMonths = if (select2 == RECURRENCE.EVERY_N_MONTH_LAST_DAY) quantity else null,
+                            nYears = if (select2 == RECURRENCE.EVERY_N_YEARS) quantity else null,
+                            recurrenceId = null,
+                            eventType = select,
+                            categoryId = categoryId,
+                        )
+                    )
+                }
+
+
+//            date = null
+//            description = ""
+//            select = EventType.REMINDER
+//            select2 = null
+//            quantity = 7
+
+                callback()
+                t()
+            }, text = "Salvar")
+        }
+    }
+    return toggle
+}

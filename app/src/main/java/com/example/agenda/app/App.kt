@@ -11,12 +11,14 @@ import com.example.agenda.domain.entities.Event
 import com.example.agenda.domain.entities.EventCategory
 import com.example.agenda.domain.entities.Goal
 import com.example.agenda.domain.entities.MyObjectBox
+import com.example.agenda.domain.entities.Person
 import com.example.agenda.domain.entities.Transaction
 import com.example.agenda.domain.entities.TransactionCategory
 import com.example.agenda.domain.repositories.box.BankBoxRepository
 import com.example.agenda.domain.repositories.box.EventBoxRepository
 import com.example.agenda.domain.repositories.box.EventCategoryBoxRepository
 import com.example.agenda.domain.repositories.box.GoalBoxRepository
+import com.example.agenda.domain.repositories.box.PersonBoxRepository
 import com.example.agenda.domain.repositories.box.TransactionBoxRepository
 import com.example.agenda.domain.repositories.box.TransactionCategoryBoxRepository
 import com.example.agenda.domain.repositories.memory.BankInMemoryRepository
@@ -43,6 +45,7 @@ import com.example.agenda.domain.usecases.GetEventsByDate
 import com.example.agenda.domain.usecases.GetGoal
 import com.example.agenda.domain.usecases.GetTransaction
 import com.example.agenda.domain.usecases.GetTransactionsByGoal
+import com.example.agenda.domain.usecases.GetWeekData
 import com.example.agenda.domain.usecases.GetWeekDataInFutureOrPast
 import com.example.agenda.domain.usecases.GetWeeksData
 import com.example.agenda.domain.usecases.UpdateBank
@@ -72,6 +75,7 @@ object App {
         val goalBox: Box<Goal> = boxStore.boxFor(Goal::class.java)
         val transactionCategoryBox: Box<TransactionCategory> = boxStore.boxFor(TransactionCategory::class.java)
         val eventCategoryBox: Box<EventCategory> = boxStore.boxFor(EventCategory::class.java)
+        val personBox: Box<Person> = boxStore.boxFor(Person::class.java)
     }
 
     object Repositories {
@@ -86,6 +90,7 @@ object App {
         val transactionCategoryRepository =
             if (Config.DEBUG) TransactionCategoryBoxRepository(Database.transactionCategoryBox) else TransactionCategoryBoxRepository(Database.transactionCategoryBox)
         val eventCategoryRepository = if(Config.DEBUG) EventCategoryBoxRepository(Database.eventCategoryBox) else EventCategoryBoxRepository(Database.eventCategoryBox)
+        val personRepository = PersonBoxRepository(Database.personBox)
     }
 
     object UseCases {
@@ -131,6 +136,10 @@ object App {
             transactionRepository = Repositories.transactionRepository,
             eventRepository = Repositories.eventRepository,
         ).attach(UI.cache)
+        val getWeekData = GetWeekData(
+            transactionRepository = Repositories.transactionRepository,
+            eventRepository = Repositories.eventRepository
+        )
         val getEventsByDate = GetEventsByDate(Repositories.eventRepository)
         val deleteEvent = DeleteEvent(Repositories.eventRepository).attach(UI.cache)
         val deleteBank = DeleteBank(

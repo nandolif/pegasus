@@ -12,4 +12,7 @@ data class Person(
     override var created_at: Long?,
     override var updated_at: Long?,
     val name: String,
+    val birthDay: Int?,
+    val birthMonth: Int?,
+    val birthYear: Int?,
 ): Entity

@@ -74,6 +74,8 @@ class CreateRecurrenceTransaction(
                     recurrenceType = recurrenceTransaction.recurrenceType,
                     categoryId = recurrenceTransaction.categoryId,
                     personId = recurrenceTransaction.personId,
+                    isCredit = recurrenceTransaction.isCredit,
+                    type = recurrenceTransaction.type
                 )
 
                 createTransaction.execute(newTransaction)

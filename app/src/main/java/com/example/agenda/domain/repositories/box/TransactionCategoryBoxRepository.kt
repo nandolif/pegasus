@@ -3,11 +3,23 @@ package com.example.agenda.domain.repositories.box
 import com.example.agenda.app.App
 import com.example.agenda.app.repositories.TransactionCategoryRepository
 import com.example.agenda.domain.entities.TransactionCategory
+import com.example.agenda.ui.screens.Transactions
 import io.objectbox.Box
 
 class TransactionCategoryBoxRepository(
     val box: Box<TransactionCategory>,
 ) : TransactionCategoryRepository {
+    override suspend fun getExpenseCategories(): List<TransactionCategory> {
+        return box.all.filter { it.type == Transactions.Type.EXPENSE }
+    }
+
+    override suspend fun getIncomeCategories(): List<TransactionCategory> {
+        return box.all.filter { it.type == Transactions.Type.INCOME }
+    }
+
+    override suspend fun getTransferCategories(): List<TransactionCategory> {
+        return box.all.filter { it.type == Transactions.Type.TRANSFER }
+    }
 
     override suspend fun create(entity: TransactionCategory) {
         box.put(entity)
@@ -19,7 +31,8 @@ class TransactionCategoryBoxRepository(
                 name = entity.name,
                 updated_at = App.Time.now(),
                 textColor = entity.textColor,
-                backgroundColor = entity.backgroundColor
+                backgroundColor = entity.backgroundColor,
+                type = entity.type
             ))
         }
     }

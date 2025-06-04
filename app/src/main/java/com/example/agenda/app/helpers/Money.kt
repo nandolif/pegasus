@@ -1,3 +1,7 @@
+import com.example.agenda.app.helps.Calculator
+import java.math.BigDecimal
+import java.math.RoundingMode
+
 object Money {
     const val CURRENCY_SYMBOL = "R$"
     const val HUNDRED_DELIMITER = "."
@@ -10,8 +14,12 @@ object Money {
     )
 
 
-    fun resolve(value: Any, withCurrency: Boolean = false): Currency {
+
+
+
+    fun resolve(value: Any, withCurrency: Boolean = false, withSign: Boolean = true): Currency {
         var v = value
+        if(v is Double) v = Calculator.round(v)
         if (v is Double && v.toString().split(".")[1].length == 1) {
             v = v.toString() + "0"
         }
@@ -28,9 +36,27 @@ object Money {
 
         text = hundreds + CENTS_DELIMITER + cents
 
+        text = if(v.toString()[0] == '-' && withSign) "-$text" else text
+
         return Currency(
             value = finalValue,
             text = if (withCurrency) CURRENCY_SYMBOL + text else text
+        )
+    }
+
+    enum class CombineType {
+        SumOrSub,
+        MultiOrDivide
+    }
+
+    fun combine(type: CombineType, or: Boolean = true, vararg args: Double): Currency {
+        val result = when (type) {
+            CombineType.SumOrSub -> args.reduce { acc, d -> if (or) acc + d else acc - d }
+            CombineType.MultiOrDivide -> args.reduce { acc, d -> if (or) acc * d else acc / d }
+        }
+        return Currency(
+            value = Calculator.round(result),
+            text = "%.2f".format(result)
         )
     }
 }

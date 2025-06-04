@@ -1,5 +1,6 @@
 package com.example.agenda.domain.usecases
 
+import com.example.agenda.app.App
 import com.example.agenda.app.common.ObserverEvents
 import com.example.agenda.app.repositories.TransactionRepository
 import com.example.agenda.app.common.Usecase

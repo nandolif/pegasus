@@ -21,12 +21,19 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,78 +51,93 @@ import com.example.agenda.domain.objects.DayMonthYearObj
 import com.example.agenda.domain.objects.MonthYearObj
 import com.example.agenda.ui.Theme
 import com.example.agenda.ui.component.Pager
+import com.example.agenda.ui.component.Structure
 import com.example.agenda.ui.component.TXT
+import com.example.agenda.ui.component.form.CreateEventForm
 import com.example.agenda.ui.system.Navigation
 import com.example.agenda.ui.viewmodels.HomeVM
-import com.example.agenda.ui.viewmodels.StructureVM
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 @Composable
 fun Home() {
-    val structureVM: StructureVM = viewModel()
     val viewModel: HomeVM = viewModel()
     val data by viewModel.data.collectAsState()
-    val fetchMoreData = FetchMoreData()
-    val indexOffset = viewModel.indexOffset
-    val indexOffsetValue by indexOffset.collectAsState()
-    val pagerState = rememberPagerState(pageCount = { Pager.pageCount(data.size) }, initialPage = 1)
-    val currentPage: MonthYearObj = data[pagerState.currentPage]
-    val days = currentPage.weeks.flatMap { it.days }
-    App.UI.title = setTitle(currentPage)
-    Column {
-        Header(structureVM, pagerState, data,indexOffsetValue)
-        Pager.Wrapper(data, currentPage) {
-            Pager.Component(pagerState) {
+    val currentDate = remember { mutableStateOf(App.Time.today.copy(day = 1)) }
+    val currentPage = viewModel.getPage(currentDate.value)
+    val selectDate = remember { mutableStateOf(App.Time.today) }
+    val coroutineScope = rememberCoroutineScope()
+
+    val toggleCreateEventForm =
+        CreateEventForm(
+            selectDate,
+            callback = {
+                coroutineScope.launch {
+                    viewModel.fetchPageData(
+                        currentDate.value,
+                        true
+                    )
+                }
+            })
+    val title: String by viewModel.title.collectAsState()
+
+    fun toggleForm(date: DayMonthYearObj = App.Time.today) {
+        selectDate.value = date
+        toggleCreateEventForm()
+    }
+    if (currentPage != null) {
+        viewModel.setTitle(currentPage)
+    }
+    val state = rememberPagerState(
+        initialPage = 200,
+        pageCount = { 400 }
+    )
+    Structure.Wrapper(
+        bottom = { Structure.BottomBar({ toggleForm() }) },
+        header = {
+            Structure.Header(title, actions = {
+
+                IconButton(onClick = {
+                    Navigation.navController.navigate(EventCategories.Screens.AllEventCategories.Route())
+                }) {
+                    Icon(
+                        Theme.Icons.EventCategory.icon,
+                        contentDescription = "Categoria de Eventos"
+                    )
+                }
+                BadgedBox(
+                    badge = {
+                        Badge(
+                            containerColor = Theme.Colors.C.color,
+                            modifier = Modifier.offset((-6).dp, 4.dp)
+                        ) { Text(App.Time.today.day.toString()) }
+                    }) {
+                    IconButton(onClick = {
+                        coroutineScope.launch {
+                            currentDate.value = App.Time.today.copy(day = 1)
+                        }
+                    }) {
+                        Icon(Theme.Icons.Event.icon, contentDescription = "Calendário")
+                    }
+                }
+
+            })
+        }) {
+        Pager.Component(
+            currentDate = currentDate,
+            state = state,
+            data = data,
+            callback = {  viewModel.fetchPageData(currentDate.value)  },
+        ) {
+            if (currentPage != null) {
+                val days = currentPage.weeks.flatMap { it.days }
+
                 WeeksBox(days, currentPage.weeks.size) { day, cellHeight ->
-                    DayItem(days, day, cellHeight)
+                    DayItem(days, day, cellHeight, ::toggleForm)
                 }
             }
-            Pager.Effect(
-                fetchMoreData = fetchMoreData,
-                pagerState = pagerState,
-                data = data,
-                indexOffset = indexOffset
-            )
         }
-    }
-}
-
-
-private fun setTitle(currentPage: MonthYearObj): String {
-    return if (currentPage.monthAndYear.year == App.Time.today.year) {
-        Date.geMonthText(currentPage.monthAndYear)
-    } else {
-        "${Date.geMonthText(currentPage.monthAndYear)} - ${currentPage.monthAndYear.year}"
-    }
-}
-
-class FetchMoreData : Pager.FetchMoreData<MonthYearObj> {
-    override suspend fun execute(
-        data: List<MonthYearObj>,
-        pagerState: PagerState,
-        last: Boolean,
-        indexOffset: MutableStateFlow<Int>,
-    ) {
-        if (last) {
-            val l = data.last()
-            val date =
-                Date.getDate(
-                    DayMonthYearObj(
-                        1,
-                        l.monthAndYear.month + 1,
-                        l.monthAndYear.year
-                    )
-                )
-            App.UseCases.getWeeksDataInFuture.execute(listOf(date, true))
-            return
-        }
-        val l = data.first()
-        val date =
-            Date.getDate(DayMonthYearObj(1, l.monthAndYear.month - 1, l.monthAndYear.year))
-        App.UseCases.getWeeksDataInFuture.execute(listOf(date, false))
-        pagerState.scrollToPage(1)
-        indexOffset.value += 1
     }
 }
 
@@ -155,7 +177,12 @@ private fun WeeksBox(
 }
 
 @Composable
-private fun DayItem(days: List<DateObj>, day: DateObj, cellHeight: Dp) {
+private fun DayItem(
+    days: List<DateObj>,
+    day: DateObj,
+    cellHeight: Dp,
+    toggleForm: (date: DayMonthYearObj) -> Unit,
+) {
     val interactionSource = remember { MutableInteractionSource() }
     val isWeekend = (days.indexOf(day) + 1) % 7 == 0 || (days.indexOf(day) + 2) % 7 == 0
     val isToday =
@@ -186,11 +213,7 @@ private fun DayItem(days: List<DateObj>, day: DateObj, cellHeight: Dp) {
                         )
                     )
                 } else {
-                    Navigation.navController.navigate(
-                        Navigation.CreateEventRoute(
-                            date = Date.dayMonthYearToString(day.date)
-                        )
-                    )
+                    toggleForm(DayMonthYearObj(day.date.day, day.date.month, day.date.year))
                 }
             }
     )

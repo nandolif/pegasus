@@ -4,7 +4,9 @@ import com.example.agenda.app.common.Entity
 import com.example.agenda.app.common.RECURRENCE
 import com.example.agenda.app.common.RecurrenceEntity
 import com.example.agenda.domain.repositories.box.RecurrenceConverter
+import com.example.agenda.domain.repositories.box.TransactionTypeConverter
 import com.example.agenda.ui.screens.TransactionCategories
+import com.example.agenda.ui.screens.Transactions
 import io.objectbox.annotation.Convert
 import io.objectbox.annotation.Entity as E
 import io.objectbox.annotation.Id
@@ -36,7 +38,10 @@ data class Transaction(
     @Convert(converter = RecurrenceConverter::class, dbType = String::class)
     override val recurrenceType: RECURRENCE?,
     var categoryId: String,
-    val personId: String?
+    val personId: String?,
+    val isCredit: Boolean,
+    @Convert(converter = TransactionTypeConverter::class, dbType = String::class)
+    val type: Transactions.Type,
 ) : Entity, RecurrenceEntity {init { createMetadata();if (goalId != null) categoryId = TransactionCategories.Default.Goal.NAME_AND_ID}}
 
 

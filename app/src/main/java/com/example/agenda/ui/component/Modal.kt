@@ -2,6 +2,8 @@ package com.example.agenda.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,10 +16,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -52,10 +59,15 @@ object Modal {
                     ) {
 
                         Row(
-                            horizontalArrangement = Arrangement.Center,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
                         ) {
+                            Row {  }
                             TXT(s = title, fs = 20)
+                            IconButton(onClick = {toggle()}) {
+                                Icon(Icons.Default.Close, contentDescription = "Close", tint = Theme.Colors.D.color)
+                            }
                         }
                         Spacer(Modifier.height(8.dp))
                         HorizontalDivider(
@@ -83,22 +95,38 @@ object Modal {
         return { toggle() }
     }
 
+    data class ListItem(
+        val text: String,
+        val callback: () -> Unit,
+    )
+
     @Composable
     fun <T> List(
         items: List<T> = listOf(),
         extraItem: (@Composable () -> Unit)? = null,
-        content: @Composable (T) -> Unit,
+        extraList: (@Composable () -> Unit)? = null,
+        content: @Composable (index: Int, item:T) -> Unit,
     ) {
+        val scrollState = rememberScrollState()
         if (items.isEmpty()) {
-            Column {
-                content(Unit as T)
-            }
-        } else {
-            Column {
 
+        } else {
+            Column(
+                Modifier.scrollable(
+                    state = scrollState,
+                    orientation = Orientation.Vertical
+                )
+            ) {
                 LazyColumn {
-                    items(items) {
-                        content(it)
+                    itemsIndexed(items) { index, it ->
+                        if (extraList != null && index == items.size - 1) {
+                            Column {
+                                content(index, it)
+                                extraList()
+                            }
+                        } else {
+                            content(index, it)
+                        }
                     }
                 }
                 if (extraItem != null) {
@@ -119,9 +147,8 @@ object Modal {
     }
 
     @Composable
-    fun <T> Item(
-        state: MutableState<T>,
-        id: T,
+    fun Item(
+        isActive: Boolean,
         callback: () -> Unit,
         text: String,
         boxColorEnabled: Color = Theme.Colors.D.color,
@@ -136,9 +163,7 @@ object Modal {
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        state.value = id
                         callback()
-
                     }
                     .height(40.dp)
             ) {
@@ -152,7 +177,7 @@ object Modal {
                         Box(
                             Modifier
                                 .background(
-                                    if (state.value == id) boxColorEnabled else boxColorDisabled,
+                                    if (isActive) boxColorEnabled else boxColorDisabled,
                                     CircleShape
                                 )
                                 .size(12.dp)
@@ -169,9 +194,13 @@ object Modal {
                     )
                 }
                 Spacer(Modifier.width(20.dp))
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     TXT(text)
-                    if(extraInfo != null) {
+                    if (extraInfo != null) {
                         TXT(extraInfo, color = Theme.Colors.C.color)
                     }
                 }

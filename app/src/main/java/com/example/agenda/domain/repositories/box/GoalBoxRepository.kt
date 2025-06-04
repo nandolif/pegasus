@@ -34,7 +34,8 @@ class GoalBoxRepository(
         return box.all
     }
 
-    override suspend fun getById(id: String): Goal {
+    override suspend fun getById(id: String): Goal? {
+        if(box.all.isEmpty()) return null
         return box.all.find { it.id == id }!!
     }
 }

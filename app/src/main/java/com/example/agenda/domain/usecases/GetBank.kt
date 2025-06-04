@@ -17,6 +17,8 @@ class GetBank(
         val transactions = transactionRepository.getByBank(bank!!)
 
         var amount = bank!!.balance
+        var creditSpent = bank.creditSpent ?: Money.ZERO
+
         for (transaction in transactions) {
             if (transaction.ghost) continue
             if (Date.isInFuture(
@@ -28,11 +30,20 @@ class GetBank(
                 )
             ) continue
             if (transaction.goalId == null) {
-                amount += transaction.amount
+                if (transaction.isCredit) {
+                    creditSpent += transaction.amount
+                } else {
+
+                    amount += transaction.amount
+                }
             } else {
-                amount -= transaction.amount
+                if (transaction.isCredit) {
+                    creditSpent -= transaction.amount
+                } else {
+                    amount -= transaction.amount
+                }
             }
         }
-        return bank.copy(balance = amount)
+        return bank.copy(balance = amount, creditSpent = if(creditSpent != Money.ZERO || bank.creditLimit != null) creditSpent else null)
     }
 }

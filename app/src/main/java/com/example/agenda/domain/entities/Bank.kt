@@ -13,5 +13,7 @@ data class Bank(
     var _id: Long = 0,
     override var created_at: Long?,
     override var updated_at: Long?,
-    val credit: Double?,
+    val creditLimit: Double?,
+    val creditSpent: Double?,
+    val flag: String
 ) : Entity {init {createMetadata()}}

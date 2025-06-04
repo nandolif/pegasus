@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,19 +29,18 @@ import com.example.agenda.app.App
 import com.example.agenda.domain.entities.TransactionCategory
 import com.example.agenda.ui.Theme
 import com.example.agenda.ui.component.BTN
-import com.example.agenda.ui.component.ColorPicker
-import com.example.agenda.ui.component.OTF
+import com.example.agenda.ui.component.Structure
 import com.example.agenda.ui.component.TXT
+import com.example.agenda.ui.component.cards.TransactionCategoryCard
+import com.example.agenda.ui.component.cards.TransactionCategoryGrid
+import com.example.agenda.ui.component.form.CreateTransactionCategoryForm
 import com.example.agenda.ui.system.Navigation
-import com.example.agenda.ui.viewmodels.StructureVM
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 
 
 object TransactionCategories {
-
-
     object Default {
         object Goal {
             const val NAME_AND_ID = "Metas"
@@ -47,11 +48,39 @@ object TransactionCategories {
             val TEXT_COLOR = Theme.Colors.A.color.value.toString()
         }
 
-        object Others {
-            const val NAME_AND_ID = "Outros"
+        object Transport {
+            const val NAME_AND_ID = "Transporte"
             val BACKGROUND_COLOR = Theme.Colors.D.color.value.toString()
             val TEXT_COLOR = Theme.Colors.A.color.value.toString()
         }
+
+        object GroceryStore {
+            const val NAME_AND_ID = "Mercado"
+            val BACKGROUND_COLOR = Theme.Colors.D.color.value.toString()
+            val TEXT_COLOR = Theme.Colors.A.color.value.toString()
+        }
+
+        object OthersExpense {
+            const val ID = "Outros Expense"
+            const val NAME = "Outros"
+            val BACKGROUND_COLOR = Theme.Colors.D.color.value.toString()
+            val TEXT_COLOR = Theme.Colors.A.color.value.toString()
+        }
+
+        object OthersIncome {
+            const val ID = "Outros Income"
+            const val NAME = "Outros"
+            val BACKGROUND_COLOR = Theme.Colors.D.color.value.toString()
+            val TEXT_COLOR = Theme.Colors.A.color.value.toString()
+        }
+
+        object OthersTransfer {
+            const val ID = "Outros Transfer"
+            const val NAME = "Outros"
+            val BACKGROUND_COLOR = Theme.Colors.D.color.value.toString()
+            val TEXT_COLOR = Theme.Colors.A.color.value.toString()
+        }
+
     }
 
     object Screens {
@@ -59,146 +88,58 @@ object TransactionCategories {
             @Serializable
             class Route
             class VM : ViewModel() {
-                val transactionCategories =
-                    MutableStateFlow(mutableListOf<TransactionCategory>())
+
+                val expenseCategories = MutableStateFlow(mutableListOf<TransactionCategory>())
+                val incomeCategories = MutableStateFlow(mutableListOf<TransactionCategory>())
+                val transferCategories = MutableStateFlow(mutableListOf<TransactionCategory>())
+
+
+                fun fetchData() {
+                    runBlocking {
+                        expenseCategories.value =
+                            App.Repositories.transactionCategoryRepository.getExpenseCategories()
+                                .toMutableList()
+                        incomeCategories.value =
+                            App.Repositories.transactionCategoryRepository.getIncomeCategories()
+                                .toMutableList()
+                        transferCategories.value =
+                            App.Repositories.transactionCategoryRepository.getTransferCategories()
+                                .toMutableList()
+                    }
+                }
 
                 init {
-                    runBlocking {
-                        transactionCategories.value =
-                            App.Repositories.transactionCategoryRepository.getAll().toMutableList()
-                    }
+                    fetchData()
                 }
             }
 
             @Composable
             fun Screen() {
                 val vm: VM = viewModel()
-                val structureVM: StructureVM = viewModel()
-                val transactionCategories by vm.transactionCategories.collectAsState()
-                App.UI.title = "Categorías de Transações"
-                Column {
-                    Header(structureVM)
-                    BTN(
-                        onClick = {
-                            Navigation.navController.navigate(CreateTransactionCategory.Route())
-                        }, text = "Criar Categoria"
-                    )
-                    LazyColumn {
-                        items(transactionCategories) {
-                            Box(
-                                modifier = Modifier
-                                    .background(Color(it.backgroundColor.toULong()))
-                                    .padding(4.dp)
-                                    .clickable {
-                                        Navigation.navController.navigate(
-                                            SingleTransactionCategory.Route(
-                                                it.id!!
-                                            )
-                                        )
-                                    }
-                            ) {
-                                TXT(it.name, color = Color(it.textColor.toULong()))
-                            }
-                            Spacer(Modifier.height(8.dp))
-                        }
-                    }
-
-                }
-            }
-        }
-
-        object CreateTransactionCategory {
-            @Serializable
-            data class Route(val id: String? = null)
-
-            @Composable
-            fun Screen(args: Route) {
-                val structureVM: StructureVM = viewModel()
-                var name by remember { mutableStateOf("") }
-                val textColor = remember { mutableStateOf(Theme.Colors.A.color.value.toString()) }
-                val backgroundColor = remember { mutableStateOf(Theme.Colors.B.color.value.toString()) }
-                var isColorPickerVisible by remember { mutableStateOf(false) }
+                val expenseCategories by vm.expenseCategories.collectAsState()
+                val incomeCategories by vm.incomeCategories.collectAsState()
+                val transferCategories by vm.transferCategories.collectAsState()
 
 
-                var transactionCategory by remember {
-                    mutableStateOf<TransactionCategory?>(
-                        null
-                    )
-                }
-                LaunchedEffect(Unit) {
-                    if (args.id != null) {
-                        runBlocking {
-                            transactionCategory =
-                                App.Repositories.transactionCategoryRepository.getById(args.id)
+                val toggleCreateForm = CreateTransactionCategoryForm(callback = {
+                        vm.fetchData()
+                })
 
-                            name = transactionCategory!!.name
-                            textColor.value = transactionCategory!!.textColor
-                            backgroundColor.value = transactionCategory!!.backgroundColor
-                        }
-                    }
-                }
-
-                if (isColorPickerVisible) ColorPicker.Component({isColorPickerVisible = false},backgroundColor, textColor)
-                App.UI.title = "Criar Categoria de Transação"
-                Column {
-                    Header(structureVM)
-                    Spacer(Modifier.height(8.dp))
-                    OTF(
-                        label = "Nome",
-                        value = name,
-                        onValueChange = { name = it }
-                    )
-                    BTN(
-                        onClick = { isColorPickerVisible = !isColorPickerVisible },
-                        text = "Selecionar Cor",
-                        containerColor = Color(backgroundColor.value.toULong()),
-                        textColor = Color(textColor.value.toULong())
-                    )
-                    if (transactionCategory == null) {
-                        BTN(
-                            onClick = {
-                                runBlocking {
-                                    if (name.isEmpty()) return@runBlocking
-                                    val t = TransactionCategory(
-                                        id = null,
-                                        name = name,
-                                        created_at = null,
-                                        updated_at = null,
-                                        textColor = textColor.value,
-                                        backgroundColor = backgroundColor.value
-                                    )
-                                    App.Repositories.transactionCategoryRepository.create(
-                                        t
-                                    )
-                                }
-                                Navigation.navController.navigate(AllTransactionCategories.Route())
-                            }, text = "Salvar"
-                        )
-                    } else {
-                        BTN(
-                            onClick = {
-                                runBlocking {
-                                    if (name.isEmpty()) return@runBlocking
-                                    val newTransactionCategory = TransactionCategory(
-                                        id = transactionCategory!!.id,
-                                        name = name,
-                                        created_at = transactionCategory!!.created_at,
-                                        updated_at = App.Time.now(),
-                                        textColor = textColor.value,
-                                        backgroundColor = backgroundColor.value
-                                    )
-                                    App.Repositories.transactionCategoryRepository.update(
-                                        newTransactionCategory
-                                    )
-                                }
-                                Navigation.navController.navigate(AllTransactionCategories.Route())
-                            }, text = "Atualizar"
+                Structure.Wrapper(
+                    header = { Structure.Header("Categorias de Transações") },
+                    bottom = { Structure.BottomBar({ toggleCreateForm() }) }) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        TransactionCategoryGrid(Transactions.Type.EXPENSE.value, expenseCategories)
+                        TransactionCategoryGrid(Transactions.Type.INCOME.value, incomeCategories)
+                        TransactionCategoryGrid(
+                            Transactions.Type.TRANSFER.value,
+                            transferCategories
                         )
                     }
-
                 }
             }
-
         }
 
         object SingleTransactionCategory {
@@ -206,7 +147,6 @@ object TransactionCategories {
             data class Route(val id: String)
 
             class VM : ViewModel() {
-
             }
 
             @Composable
@@ -222,11 +162,14 @@ object TransactionCategories {
                         App.Repositories.transactionCategoryRepository.getById(args.id)
                 }
 
-                val structureVM: StructureVM = viewModel()
-                App.UI.title = "Categoria de Transação"
-                Column {
 
-                    Header(structureVM)
+                val createTransactionCategoryForm =
+                    CreateTransactionCategoryForm(
+                        id = transactionCategory?.id,
+                        callback = {  }
+                    )
+
+                Structure.Wrapper(header = { Structure.Header("Categoria de Transação") }) {
                     Column {
                         Box(Modifier.background(color = Color(transactionCategory?.backgroundColor!!.toULong()))) {
 
@@ -238,26 +181,18 @@ object TransactionCategories {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-//                        BTN(onClick = {
-//                            runBlocking {
-//                                App.Repositories.transactionCategoryRepository.delete(
-//                                    transactionCategory!!
-//                                )
-//                                App.Repositories.transactionRepository.deleteByCategory(
-//                                    transactionCategory!!.id!!
-//                                )
-//                            }
-//                            Navigation.navController.navigate(AllTransactionCategories.Route())
-//                        }) {
-//                            TXT("Deletar", color = Theme.Colors.A.color)
-//                        }
-                            BTN(onClick = {
-                                Navigation.navController.navigate(
-                                    CreateTransactionCategory.Route(
-                                        args.id
+                            BTN(text = "Deletar", onClick = {
+                                runBlocking {
+                                    App.Repositories.transactionCategoryRepository.delete(
+                                        transactionCategory!!
                                     )
-                                )
-                            }, text = "Atualizar")
+                                    App.Repositories.transactionRepository.deleteByCategory(
+                                        transactionCategory!!.id!!
+                                    )
+                                }
+                                Navigation.navController.navigate(AllTransactionCategories.Route())
+                            })
+                            BTN(onClick = createTransactionCategoryForm, text = "Atualizar")
                         }
                     }
                 }

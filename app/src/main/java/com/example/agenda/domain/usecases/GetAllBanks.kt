@@ -10,14 +10,14 @@ import com.example.agenda.domain.entities.Bank
 
 class GetAllBanks(
     private val bankRepository: BankRepository
-): Usecase<Unit, Unit>, Subject<GetAllBanks>{
+): Usecase<Unit, List<Bank>>, Subject<GetAllBanks>{
     override val observers: MutableList<Observer> = mutableListOf()
-    override suspend fun execute(input: Unit) {
+    override suspend fun execute(input: Unit): List<Bank> {
         val allBanks = bankRepository.getAll()
         val banks = mutableListOf<Bank>()
         for (bank in allBanks) {
             banks.add(App.UseCases.getBank.execute(bank.id!!))
         }
-        notifyAll(ObserverEvents.GET_ALL_BANKS, banks)
+        return banks
     }
 }

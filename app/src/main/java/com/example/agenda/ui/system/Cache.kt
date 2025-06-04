@@ -57,7 +57,6 @@ class Cache : Observer {
     }
 
     private suspend fun resetCache() = coroutineScope {
-        App.UseCases.getWeeksData.execute(App.Time.today)
         App.UseCases.getAllBanks.execute(Unit)
         //App.UseCases.getListOfTransactionsByMonthAndYear.execute(App.Time.today)
         App.UseCases.getAllTransactions.execute(Unit)

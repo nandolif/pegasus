@@ -1,0 +1,488 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:9056249420585365337",
+      "lastPropertyId": "10:4101610307779777909",
+      "name": "Bank",
+      "properties": [
+        {
+          "id": "1:3779037196357169533",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "2:1071018117654362485",
+          "name": "balance",
+          "type": 8
+        },
+        {
+          "id": "3:2935411642804336883",
+          "name": "id",
+          "type": 9
+        },
+        {
+          "id": "4:2535625845735826956",
+          "name": "_id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "5:6492053353631508609",
+          "name": "created_at",
+          "type": 6
+        },
+        {
+          "id": "6:7040452637014872381",
+          "name": "updated_at",
+          "type": 6
+        },
+        {
+          "id": "8:2748074447254414320",
+          "name": "creditLimit",
+          "type": 8
+        },
+        {
+          "id": "9:8871334649949583971",
+          "name": "creditSpent",
+          "type": 8
+        },
+        {
+          "id": "10:4101610307779777909",
+          "name": "flag",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "2:3997346523361598110",
+      "lastPropertyId": "16:4318026970227157699",
+      "name": "Event",
+      "properties": [
+        {
+          "id": "1:5023831491968520057",
+          "name": "_id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:903194803185469964",
+          "name": "day",
+          "type": 5
+        },
+        {
+          "id": "3:5331334872156459307",
+          "name": "month",
+          "type": 5
+        },
+        {
+          "id": "4:5830451198923393645",
+          "name": "year",
+          "type": 5
+        },
+        {
+          "id": "5:4829767895790348597",
+          "name": "description",
+          "type": 9
+        },
+        {
+          "id": "6:2885084379166923695",
+          "name": "id",
+          "type": 9
+        },
+        {
+          "id": "7:8609735618877351945",
+          "name": "created_at",
+          "type": 6
+        },
+        {
+          "id": "8:595525456671549452",
+          "name": "updated_at",
+          "type": 6
+        },
+        {
+          "id": "9:4863241961692350658",
+          "name": "recurrenceType",
+          "type": 9
+        },
+        {
+          "id": "10:3930551928659312392",
+          "name": "nDays",
+          "type": 5
+        },
+        {
+          "id": "11:1803857971556787225",
+          "name": "nWeeks",
+          "type": 5
+        },
+        {
+          "id": "12:4021079800877214830",
+          "name": "nMonths",
+          "type": 5
+        },
+        {
+          "id": "13:2764799684686217334",
+          "name": "nYears",
+          "type": 5
+        },
+        {
+          "id": "14:6897986015402033796",
+          "name": "recurrenceId",
+          "type": 9
+        },
+        {
+          "id": "15:2441120611908532003",
+          "name": "eventType",
+          "type": 9
+        },
+        {
+          "id": "16:4318026970227157699",
+          "name": "categoryId",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "3:648937403954918802",
+      "lastPropertyId": "7:9176414679960448911",
+      "name": "EventCategory",
+      "properties": [
+        {
+          "id": "1:5312815861890834252",
+          "name": "_id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:5005300192556091558",
+          "name": "id",
+          "type": 9
+        },
+        {
+          "id": "3:7682778986799606446",
+          "name": "created_at",
+          "type": 6
+        },
+        {
+          "id": "4:1822744240108958842",
+          "name": "updated_at",
+          "type": 6
+        },
+        {
+          "id": "5:3303505164259042445",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "6:1876234915845586377",
+          "name": "textColor",
+          "type": 9
+        },
+        {
+          "id": "7:9176414679960448911",
+          "name": "backgroundColor",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "4:3773684685867048380",
+      "lastPropertyId": "8:7651400971245730555",
+      "name": "Goal",
+      "properties": [
+        {
+          "id": "1:3139533853746611747",
+          "name": "_id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:605641271255856072",
+          "name": "id",
+          "type": 9
+        },
+        {
+          "id": "3:1537603291794088314",
+          "name": "created_at",
+          "type": 6
+        },
+        {
+          "id": "4:973808353963912272",
+          "name": "updated_at",
+          "type": 6
+        },
+        {
+          "id": "5:2133692074039387741",
+          "name": "achieved",
+          "type": 1
+        },
+        {
+          "id": "6:7373604888334083899",
+          "name": "amount",
+          "type": 8
+        },
+        {
+          "id": "7:8820281131994722822",
+          "name": "title",
+          "type": 9
+        },
+        {
+          "id": "8:7651400971245730555",
+          "name": "actualAmount",
+          "type": 8
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "5:36542716276003647",
+      "lastPropertyId": "8:4284355801838904256",
+      "name": "Person",
+      "properties": [
+        {
+          "id": "1:1289481286285412410",
+          "name": "_id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:1616677958036556542",
+          "name": "id",
+          "type": 9
+        },
+        {
+          "id": "3:1656736510466126444",
+          "name": "created_at",
+          "type": 6
+        },
+        {
+          "id": "4:7747115868110234335",
+          "name": "updated_at",
+          "type": 6
+        },
+        {
+          "id": "5:7728858681874256544",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "6:6323401385869559028",
+          "name": "birthDay",
+          "type": 5
+        },
+        {
+          "id": "7:6750538278853630178",
+          "name": "birthMonth",
+          "type": 5
+        },
+        {
+          "id": "8:4284355801838904256",
+          "name": "birthYear",
+          "type": 5
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "6:3003379708854727677",
+      "lastPropertyId": "25:8926526735037959726",
+      "name": "Transaction",
+      "properties": [
+        {
+          "id": "1:4924841564382897307",
+          "name": "_id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6349895845488126865",
+          "name": "id",
+          "type": 9
+        },
+        {
+          "id": "3:4815965038238968092",
+          "name": "day",
+          "type": 5
+        },
+        {
+          "id": "4:7106659114558734751",
+          "name": "month",
+          "type": 5
+        },
+        {
+          "id": "5:5640392183478672440",
+          "name": "year",
+          "type": 5
+        },
+        {
+          "id": "6:8250398667535794081",
+          "name": "amount",
+          "type": 8
+        },
+        {
+          "id": "7:1893977245669040450",
+          "name": "description",
+          "type": 9
+        },
+        {
+          "id": "8:2376286142202529870",
+          "name": "created_at",
+          "type": 6
+        },
+        {
+          "id": "9:7757688614845719824",
+          "name": "updated_at",
+          "type": 6
+        },
+        {
+          "id": "10:6030061646013290467",
+          "name": "bankId",
+          "type": 9
+        },
+        {
+          "id": "11:5100908171302347730",
+          "name": "recurrenceId",
+          "type": 9
+        },
+        {
+          "id": "12:828406803416739118",
+          "name": "ghost",
+          "type": 1
+        },
+        {
+          "id": "13:7597589814456730759",
+          "name": "goalId",
+          "type": 9
+        },
+        {
+          "id": "14:1155959569081172315",
+          "name": "canceled",
+          "type": 1
+        },
+        {
+          "id": "15:8051382430617648344",
+          "name": "canceledDay",
+          "type": 5
+        },
+        {
+          "id": "16:5292662770253250788",
+          "name": "canceledMonth",
+          "type": 5
+        },
+        {
+          "id": "17:2210570731265973003",
+          "name": "canceledYear",
+          "type": 5
+        },
+        {
+          "id": "18:562723278288738945",
+          "name": "nDays",
+          "type": 5
+        },
+        {
+          "id": "19:7609874014806849509",
+          "name": "nWeeks",
+          "type": 5
+        },
+        {
+          "id": "20:7279758210517134291",
+          "name": "nMonths",
+          "type": 5
+        },
+        {
+          "id": "21:8107906561060807327",
+          "name": "nYears",
+          "type": 5
+        },
+        {
+          "id": "22:6744679235589777027",
+          "name": "recurrenceType",
+          "type": 9
+        },
+        {
+          "id": "23:8469480997204896005",
+          "name": "categoryId",
+          "type": 9
+        },
+        {
+          "id": "24:5406195148930444978",
+          "name": "personId",
+          "type": 9
+        },
+        {
+          "id": "25:8926526735037959726",
+          "name": "isCredit",
+          "type": 1
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "7:6034546426186404296",
+      "lastPropertyId": "8:2817478464553295186",
+      "name": "TransactionCategory",
+      "properties": [
+        {
+          "id": "1:17334354016123068",
+          "name": "_id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:1143784110958964714",
+          "name": "id",
+          "type": 9
+        },
+        {
+          "id": "3:9213596210997447672",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "4:2024966927544996276",
+          "name": "created_at",
+          "type": 6
+        },
+        {
+          "id": "5:6454282528016855905",
+          "name": "updated_at",
+          "type": 6
+        },
+        {
+          "id": "6:693219715940363408",
+          "name": "textColor",
+          "type": 9
+        },
+        {
+          "id": "7:1284266530638482073",
+          "name": "backgroundColor",
+          "type": 9
+        },
+        {
+          "id": "8:2817478464553295186",
+          "name": "type",
+          "type": 9
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "lastEntityId": "7:6034546426186404296",
+  "lastIndexId": "0:0",
+  "lastRelationId": "0:0",
+  "lastSequenceId": "0:0",
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 5,
+  "retiredEntityUids": [],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [
+    2672921342362139306
+  ],
+  "retiredRelationUids": [],
+  "version": 1
+}

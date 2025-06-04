@@ -6,6 +6,7 @@ import com.example.agenda.domain.entities.Bank
 import com.example.agenda.domain.entities.Goal
 import com.example.agenda.domain.entities.Transaction
 import com.example.agenda.domain.objects.DayMonthYearObj
+import com.example.agenda.domain.objects.TransactionWithData
 
 class TransactionInMemoryRepository: TransactionRepository {
     private val transactions = mutableListOf<Transaction>()
@@ -36,6 +37,10 @@ class TransactionInMemoryRepository: TransactionRepository {
 
     override suspend fun getByGoal(goal: Goal): List<Transaction> {
         return transactions.filter { it.goalId == goal.id }
+    }
+
+    override suspend fun getByMonthAndYearWithData(date: DayMonthYearObj): List<TransactionWithData> {
+        TODO("Not yet implemented")
     }
 
     override suspend fun getByDate(date: DayMonthYearObj): List<Transaction> {

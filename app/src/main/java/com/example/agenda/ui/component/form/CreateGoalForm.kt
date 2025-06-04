@@ -1,4 +1,4 @@
-package com.example.agenda.ui.screens
+package com.example.agenda.ui.component.form
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,26 +13,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.agenda.app.App
 import com.example.agenda.domain.entities.Goal
-import com.example.agenda.ui.Theme
 import com.example.agenda.ui.component.BTN
+import com.example.agenda.ui.component.BottomSheet
 import com.example.agenda.ui.component.OTF
-import com.example.agenda.ui.component.TXT
-import com.example.agenda.ui.system.Navigation
-import com.example.agenda.ui.viewmodels.GoalsVM
-import com.example.agenda.ui.viewmodels.StructureVM
 import kotlinx.coroutines.runBlocking
 
 @Composable
-fun CreateGoal(vm: GoalsVM = viewModel()) {
+fun CreateGoalForm(id: String? = null, callback: () -> Unit): () -> Unit {
     var title by remember { mutableStateOf("") }
     var amount by remember { mutableStateOf(Money.ZERO) }
-    val structureVM: StructureVM = viewModel()
-    App.UI.title = "Criar Meta"
-    Column {
-        Header(structureVM)
+    val toggle =  BottomSheet.Wrapper { t ->
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -66,8 +59,10 @@ fun CreateGoal(vm: GoalsVM = viewModel()) {
                         )
                     )
                 }
-                Navigation.navController.navigate(Navigation.GoalsRoute())
-            },text = "Salvar")
+                callback()
+                t()
+            }, text = "Salvar")
         }
     }
+    return toggle
 }

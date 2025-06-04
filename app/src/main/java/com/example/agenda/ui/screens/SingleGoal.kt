@@ -5,30 +5,30 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.agenda.app.App
-import com.example.agenda.ui.Theme
 import com.example.agenda.ui.component.BTN
+import com.example.agenda.ui.component.Structure
 import com.example.agenda.ui.component.TXT
+import com.example.agenda.ui.component.form.CreateGoalForm
 import com.example.agenda.ui.system.Navigation
 import com.example.agenda.ui.viewmodels.SingleGoalVM
-import com.example.agenda.ui.viewmodels.StructureVM
 import kotlinx.coroutines.runBlocking
 
 @Composable
 fun SingleGoal(id: String) {
     val vm = SingleGoalVM(id)
-    val structureVM: StructureVM = viewModel()
     val goal by vm.goal.collectAsState()
     val transactions by vm.transactions.collectAsState()
 
-    Column {
-        Header(structureVM)
+    val toggleCreateGoalForm = CreateGoalForm(callback = {})
+    Structure.Wrapper(header = { Structure.Header("Meta") }, bottom = { Structure.BottomBar(toggleCreateGoalForm, Icons.Default.Edit) }) {
         if (goal == null) {
             TXT("Carregando...")
         } else {

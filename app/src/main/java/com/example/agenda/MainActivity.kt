@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.LaunchedEffect
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.agenda.app.App
-import com.example.agenda.ui.screens.Test
+import com.example.agenda.ui.component.IconPicker
 import com.example.agenda.ui.system.Navigation
 
 class MainActivity : ComponentActivity() {
@@ -21,6 +21,8 @@ class MainActivity : ComponentActivity() {
                 App.Repositories.transactionCategoryRepository.setup()
                 App.Repositories.eventCategoryRepository.setup()
                 App.Repositories.bankRepository.setup()
+                App.Repositories.personRepository.setup()
+                App.Repositories.goalRepository.setup()
             }
         }
     }

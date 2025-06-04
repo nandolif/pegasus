@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -26,9 +28,9 @@ import com.example.agenda.app.App
 import com.example.agenda.domain.entities.EventCategory
 import com.example.agenda.ui.Theme
 import com.example.agenda.ui.component.BTN
-import com.example.agenda.ui.component.ColorPicker
-import com.example.agenda.ui.component.OTF
+import com.example.agenda.ui.component.Structure
 import com.example.agenda.ui.component.TXT
+import com.example.agenda.ui.component.form.CreateEventCategoryForm
 import com.example.agenda.ui.system.Navigation
 import com.example.agenda.ui.viewmodels.StructureVM
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,10 +54,13 @@ object EventCategories {
             class VM : ViewModel() {
                 val eventCategories = MutableStateFlow(mutableListOf<EventCategory>())
 
-                init {
+                fun fetchData() {
                     runBlocking {
                         eventCategories.value = App.Repositories.eventCategoryRepository.getAll().toMutableList()
                     }
+                }
+                init {
+                    fetchData()
                 }
             }
 
@@ -63,16 +68,9 @@ object EventCategories {
             fun Screen() {
                 val vm: VM = viewModel()
                 val structureVM: StructureVM = viewModel()
-                App.UI.title = "Categorias de Eventos"
-
                 val eventCategories by vm.eventCategories.collectAsState()
-
-                Column {
-                    Header(structureVM)
-                    BTN(
-                        "Adicionar Categoria de Evento",
-                        { Navigation.navController.navigate(CreateEventCategory.Route()) })
-                    Spacer(Modifier.height(10.dp))
+                val createEventCategoryForm = CreateEventCategoryForm(callback = {vm.fetchData()})
+                Structure.Wrapper(header = { Structure.Header("Categorias de Eventos") }, bottom = {Structure.BottomBar(createEventCategoryForm)}) {
                     LazyColumn {
                         items(eventCategories) {
                             Box(
@@ -92,112 +90,10 @@ object EventCategories {
                 }
             }
         }
-        object CreateEventCategory {
-            @Serializable
-            data class Route(val id: String? = null)
-
-            @Composable
-            fun Screen(args: Route) {
-                val structureVM: StructureVM = viewModel()
-                var name by remember { mutableStateOf("") }
-                val textColor = remember { mutableStateOf(Theme.Colors.A.color.value.toString()) }
-                val backgroundColor =
-                    remember { mutableStateOf(Theme.Colors.D.color.value.toString()) }
-                var isColorPickerVisible by remember { mutableStateOf(false) }
-
-
-                var eventCategory by remember {
-                    mutableStateOf<EventCategory?>(
-                        null
-                    )
-                }
-                LaunchedEffect(Unit) {
-                    if (args.id != null) {
-                        runBlocking {
-                            eventCategory =
-                                App.Repositories.eventCategoryRepository.getById(args.id)
-
-                            name = eventCategory!!.name
-                            textColor.value = eventCategory!!.textColor
-                            backgroundColor.value = eventCategory!!.backgroundColor
-                        }
-                    }
-                }
-
-                if (isColorPickerVisible) ColorPicker.Component(
-                    { isColorPickerVisible = false },
-                    backgroundColor,
-                    textColor
-                )
-                App.UI.title = "Criar Categoria de Evento"
-                Column {
-                    Header(structureVM)
-                    Spacer(Modifier.height(8.dp))
-                    OTF(
-                        label = "Nome",
-                        value = name,
-                        onValueChange = { name = it }
-                    )
-                    BTN(
-                        onClick = { isColorPickerVisible = !isColorPickerVisible },
-                        text = "Selecionar Cor",
-                        containerColor = Color(backgroundColor.value.toULong()),
-                        textColor = Color(textColor.value.toULong())
-                    )
-                    if (eventCategory == null) {
-                        BTN(
-                            onClick = {
-                                runBlocking {
-                                    if (name.isEmpty()) return@runBlocking
-                                    val t = EventCategory(
-                                        id = null,
-                                        name = name,
-                                        created_at = null,
-                                        updated_at = null,
-                                        textColor = textColor.value,
-                                        backgroundColor = backgroundColor.value
-                                    )
-                                    App.Repositories.eventCategoryRepository.create(
-                                        t
-                                    )
-                                }
-                                Navigation.navController.navigate(AllEventCategories.Route())
-                            }, text = "Salvar"
-                        )
-                    } else {
-                        BTN(
-                            onClick = {
-                                runBlocking {
-                                    if (name.isEmpty()) return@runBlocking
-                                    val newEventCateogory = EventCategory(
-                                        id = eventCategory!!.id,
-                                        name = name,
-                                        created_at = eventCategory!!.created_at,
-                                        updated_at = App.Time.now(),
-                                        textColor = textColor.value,
-                                        backgroundColor = backgroundColor.value
-                                    )
-                                    App.Repositories.eventCategoryRepository.update(
-                                        newEventCateogory
-                                    )
-                                }
-                                Navigation.navController.navigate(AllEventCategories.Route())
-                            }, text = "Atualizar"
-                        )
-                    }
-
-                }
-            }
-
-        }
         object SingleEventCategory {
             @Serializable
             data class Route(val id: String)
 
-            class VM : ViewModel() {
-
-            }
-
             @Composable
             fun Screen(args: Route) {
                 var eventCategory by remember {
@@ -205,17 +101,17 @@ object EventCategories {
                         null
                     )
                 }
-
                 runBlocking {
                     eventCategory =
                         App.Repositories.eventCategoryRepository.getById(args.id)
                 }
 
                 val structureVM: StructureVM = viewModel()
-                App.UI.title = "Categoria de Transação"
-                Column {
+                Structure.Wrapper(
+                    header = {Structure.Header("Categoria de Evento")},
+                    bottom = {Structure.BottomBar(CreateEventCategoryForm(eventCategory?.id , callback = {}), Icons.Default.Edit)}
+                ) {
 
-                    Header(structureVM)
                     Column {
                         Box(Modifier.background(color = Color(eventCategory?.backgroundColor!!.toULong()))) {
 
@@ -240,13 +136,6 @@ object EventCategories {
 //                        }) {
 //                            TXT("Deletar", color = Theme.Colors.A.color)
 //                        }
-                            BTN(onClick = {
-                                Navigation.navController.navigate(
-                                    CreateEventCategory.Route(
-                                        args.id
-                                    )
-                                )
-                            }, text = "Atualizar")
                         }
                     }
                 }

@@ -2,17 +2,31 @@ package com.example.agenda.app.helps
 
 import com.example.agenda.app.common.Entity
 import com.example.agenda.domain.entities.Variable
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 object Calculator {
+
+    fun round(value: Double): Double {
+        val raw = BigDecimal.valueOf(value)
+        return raw.setScale(2, RoundingMode.HALF_EVEN).toDouble()
+    }
+
+    fun percentByTotal(value: Double, total: Double): Money.Currency {
+        val result = Money.resolve(round(value / total * 100), withSign = false)
+        return result.copy(text = result.text + "%")
+    }
+
     fun eval(value: String, variables: List<Variable>): Float {
         var newValue = substituteVariable(value, variables)
         newValue = separateEquations(newValue)
         return newValue.toFloat()
     }
+
     fun getLocalVariables(c: Entity): List<Variable> {
         val variables = mutableListOf<Variable>()
         var t = c.toString()
-        t = t.replace(",","")
+        t = t.replace(",", "")
         t = t.replace(" ", "=")
         val v = t.split("=").toMutableList()
         var m = v[0].split("(")[1]
@@ -27,7 +41,7 @@ object Calculator {
             variables.add(
                 Variable(
                     name = v[v.indexOf(va)],
-                    value = v[v.indexOf(va)+1],
+                    value = v[v.indexOf(va) + 1],
                     id = null,
                     created_at = null,
                     updated_at = null
@@ -36,6 +50,7 @@ object Calculator {
         }
         return variables
     }
+
     private fun substituteVariable(value: String, variables: List<Variable>): String {
         var t = value
         for (variable in variables) {
@@ -49,6 +64,7 @@ object Calculator {
         }
         return t
     }
+
     private fun separateEquations(value: String): String {
         var t = value
         if (t.contains("(")) {
@@ -74,6 +90,7 @@ object Calculator {
         return calculate(t)
 
     }
+
     private fun calculate(value: String): String {
         var t = value
         var newT = t

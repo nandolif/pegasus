@@ -11,6 +11,10 @@ class BankInMemoryRepository :
         return banks.find { it.id == id }!!
     }
 
+    override fun onlyWithCredit(): List<Bank> {
+        return emptyList<Bank>().plus(banks).filter { it.creditLimit != null }
+    }
+
     override suspend fun create(entity: Bank) {
         banks.add(entity)
     }

@@ -9,6 +9,7 @@ import com.example.agenda.app.App
 import com.example.agenda.ui.Theme
 import com.example.agenda.ui.component.BTN
 import com.example.agenda.ui.component.TXT
+import com.example.agenda.ui.component.form.CreateTransactionForm
 import com.example.agenda.ui.system.Navigation
 import com.example.agenda.ui.viewmodels.SingleTransactionVM
 import com.example.agenda.ui.viewmodels.StructureVM
@@ -23,7 +24,6 @@ fun SingleTransaction(id: String) {
     val goal by vm.goal.collectAsState()
     val category by vm.category.collectAsState()
     Column {
-        Header(structureVM)
         if (transaction == null) {
             TXT("Cargando...")
         } else {
@@ -45,7 +45,6 @@ fun SingleTransaction(id: String) {
                 },text="Deletar")
 
                 BTN(onClick = {
-                    Navigation.navController.navigate(Transactions.Screens.CreateTransaction.Route(transaction!!.id!!))
                 }, text="Atualizar")
 
             }

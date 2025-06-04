@@ -23,6 +23,7 @@ import com.example.agenda.domain.entities.TransactionCategory
 import com.example.agenda.ui.Theme
 import com.example.agenda.ui.screens.EventCategories
 import com.example.agenda.ui.screens.TransactionCategories
+import com.example.agenda.ui.screens.Transactions
 
 class Backup(
     private val bankRepository: BankRepository,
@@ -147,7 +148,7 @@ class Backup(
         }
         deleteAll()
         restoreBank(bankFile)
-        restoreTransactionCategory(transactionCategoryFile)
+//        restoreTransactionCategory(transactionCategoryFile)
         restoreTransaction(transactionFile)
         restoreEventCategory(eventCategoryFile)
         restoreEvent(eventFile)
@@ -179,30 +180,32 @@ class Backup(
         }
     }
 
-    private suspend fun restoreTransactionCategory(file: File.CSV.CSVFile?) {
-        if (file != null) {
-            val _id = 0
-            val id = 1
-            val name = 2
-            val created_at = 3
-            val updated_at = 4
-            val textColor = 5
-            val backgroundColor =6
-            for (data in file.data) {
-                val transactionCategory = TransactionCategory(
-                    id = data[id],
-                    name = data[name],
-                    created_at = data[created_at].toLong(),
-                    updated_at = data[updated_at].toLong(),
-                    textColor = data.getOrNull(textColor) ?: Theme.Colors.A.color.value.toString(),
-                    backgroundColor = data.getOrNull(backgroundColor)?: Theme.Colors.A.color.value.toString(),
-                )
-
-                transactionCategoryRepository.create(transactionCategory)
-            }
-
-        }
-    }
+//    private suspend fun restoreTransactionCategory(file: File.CSV.CSVFile?) {
+//        if (file != null) {
+//            val _id = 0
+//            val id = 1
+//            val name = 2
+//            val created_at = 3
+//            val updated_at = 4
+//            val textColor = 5
+//            val backgroundColor =6
+//            val type = 7
+//            for (data in file.data) {
+//                val transactionCategory = TransactionCategory(
+//                    id = data[id],
+//                    name = data[name],
+//                    created_at = data[created_at].toLong(),
+//                    updated_at = data[updated_at].toLong(),
+//                    textColor = data.getOrNull(textColor) ?: Theme.Colors.A.color.value.toString(),
+//                    backgroundColor = data.getOrNull(backgroundColor)?: Theme.Colors.A.color.value.toString(),
+//                    type = data.getOrNull(type) ?: Transactions.Type.EXPENSE
+//                )
+//
+//                transactionCategoryRepository.create(transactionCategory)
+//            }
+//
+//        }
+//    }
 
     private suspend fun restoreEvent(file: File.CSV.CSVFile?) {
         if (file != null) {
@@ -254,7 +257,8 @@ class Backup(
             val _id = 3
             val created_at = 4
             val updated_at = 5
-            val credit = 6
+            val creditLimit = 6
+            val creditSpent = 7
 
             for (data in file.data) {
                 val bank = Bank(
@@ -263,7 +267,9 @@ class Backup(
                     id = data[id],
                     created_at = data[created_at].toLong(),
                     updated_at = data[updated_at].toLong(),
-                    credit = data[credit].toDoubleOrNull(),
+                    creditLimit = data[creditLimit].toDoubleOrNull(),
+                    creditSpent = data[creditSpent].toDoubleOrNull(),
+                    flag = "Wallet"
                 )
                 bankRepository.create(bank)
             }
@@ -296,7 +302,7 @@ class Backup(
             val recurrenceType = 21
             val categoryId = 22
             val personId = 23
-
+            val isCredit = 24
 
             for (data in file.data) {
                 val categoryIdData = data.getOrNull(categoryId)
@@ -322,8 +328,10 @@ class Backup(
                     nMonths = data[nMonths].toIntOrNull(),
                     nYears = data[nYears].toIntOrNull(),
                     recurrenceType = if (data[recurrenceType] != "null") RECURRENCE.valueOf(data[recurrenceType]) else null,
-                    categoryId = if (categoryIdData == null || categoryIdData == "null") TransactionCategories.Default.Others.NAME_AND_ID else categoryIdData,
-                    personId = data[personId]
+                    categoryId = if (categoryIdData == null || categoryIdData == "null") TransactionCategories.Default.OthersExpense.ID else categoryIdData,
+                    personId = data[personId],
+                    isCredit = data[isCredit].toBoolean(),
+                    type = Transactions.Type.EXPENSE
                 )
                 transactionRepository.create(transaction)
             }
