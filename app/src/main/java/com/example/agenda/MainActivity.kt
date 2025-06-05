@@ -6,8 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.LaunchedEffect
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.agenda.app.App
-import com.example.agenda.ui.component.IconPicker
 import com.example.agenda.ui.system.Navigation
+import com.example.agenda.ui.system.Permission
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,13 +16,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             App.UI.context = this
             App.UI.notify.NotifyComponent()
-            Navigation.Host()
-            LaunchedEffect(Unit) {
-                App.Repositories.transactionCategoryRepository.setup()
-                App.Repositories.eventCategoryRepository.setup()
-                App.Repositories.bankRepository.setup()
-                App.Repositories.personRepository.setup()
-                App.Repositories.goalRepository.setup()
+            Permission.Ask().Component {
+                Navigation.Host()
+                LaunchedEffect(Unit) {
+                    App.Repositories.transactionCategoryRepository.setup()
+                    App.Repositories.eventCategoryRepository.setup()
+                    App.Repositories.bankRepository.setup()
+                    App.Repositories.personRepository.setup()
+                    App.Repositories.goalRepository.setup()
+                }
             }
         }
     }

@@ -138,7 +138,6 @@ object Transactions {
                         Column(
                             verticalArrangement = Arrangement.spacedBy(30.dp),
                             modifier = Modifier
-                                .clickable { }
                                 .fillMaxWidth()
                                 .padding(horizontal = 10.dp)
                         ) {

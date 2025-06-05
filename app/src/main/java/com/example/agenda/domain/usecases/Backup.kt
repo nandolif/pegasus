@@ -37,7 +37,6 @@ class Backup(
     override val observers: MutableList<Observer> = mutableListOf()
     override suspend fun execute(input: Unit) {
         File.deleteFolder(File.Path.BACKUP)
-
         val banks = bankRepository.getAll()
         val events = eventRepository.getAll()
         val transactions = transactionRepository.getAll()
@@ -148,7 +147,7 @@ class Backup(
         }
         deleteAll()
         restoreBank(bankFile)
-//        restoreTransactionCategory(transactionCategoryFile)
+        restoreTransactionCategory(transactionCategoryFile)
         restoreTransaction(transactionFile)
         restoreEventCategory(eventCategoryFile)
         restoreEvent(eventFile)
@@ -158,7 +157,7 @@ class Backup(
 
     private suspend fun restoreEventCategory(file: File.CSV.CSVFile?) {
         if (file != null) {
-            val _id =  0
+            val _id = 0
             val id = 1
             val created_at = 2
             val updated_at = 3
@@ -180,32 +179,33 @@ class Backup(
         }
     }
 
-//    private suspend fun restoreTransactionCategory(file: File.CSV.CSVFile?) {
-//        if (file != null) {
-//            val _id = 0
-//            val id = 1
-//            val name = 2
-//            val created_at = 3
-//            val updated_at = 4
-//            val textColor = 5
-//            val backgroundColor =6
-//            val type = 7
-//            for (data in file.data) {
-//                val transactionCategory = TransactionCategory(
-//                    id = data[id],
-//                    name = data[name],
-//                    created_at = data[created_at].toLong(),
-//                    updated_at = data[updated_at].toLong(),
-//                    textColor = data.getOrNull(textColor) ?: Theme.Colors.A.color.value.toString(),
-//                    backgroundColor = data.getOrNull(backgroundColor)?: Theme.Colors.A.color.value.toString(),
-//                    type = data.getOrNull(type) ?: Transactions.Type.EXPENSE
-//                )
-//
-//                transactionCategoryRepository.create(transactionCategory)
-//            }
-//
-//        }
-//    }
+    private suspend fun restoreTransactionCategory(file: File.CSV.CSVFile?) {
+        if (file != null) {
+            val _id = 0
+            val id = 1
+            val name = 2
+            val created_at = 3
+            val updated_at = 4
+            val textColor = 5
+            val backgroundColor = 6
+            val type = 7
+            for (data in file.data) {
+                val transactionCategory = TransactionCategory(
+                    id = data[id],
+                    name = data[name],
+                    created_at = data[created_at].toLong(),
+                    updated_at = data[updated_at].toLong(),
+                    textColor = data.getOrNull(textColor) ?: Theme.Colors.A.color.value.toString(),
+                    backgroundColor = data.getOrNull(backgroundColor)
+                        ?: Theme.Colors.A.color.value.toString(),
+                    type = Transactions.Type.valueOf(data[type])
+                )
+
+                transactionCategoryRepository.create(transactionCategory)
+            }
+
+        }
+    }
 
     private suspend fun restoreEvent(file: File.CSV.CSVFile?) {
         if (file != null) {
@@ -241,7 +241,8 @@ class Backup(
                     nYears = data[nYears].toIntOrNull(),
                     recurrenceId = if (data[recurrenceId] != "null") data[recurrenceId] else null,
                     eventType = EventType.valueOf(data[eventType]),
-                    categoryId = data.getOrNull(categoryId) ?: EventCategories.Default.Others.NAME_AND_ID
+                    categoryId = data.getOrNull(categoryId)
+                        ?: EventCategories.Default.Others.NAME_AND_ID
                 )
                 eventRepository.create(event)
             }
@@ -369,6 +370,8 @@ class Backup(
         val banks = bankRepository.getAll()
         val events = eventRepository.getAll()
         val transactions = transactionRepository.getAll()
+        val transactionsCategories = transactionCategoryRepository.getAll()
+        val eventCategories = eventCategoryRepository.getAll()
         val goals = goalRepository.getAll()
 
         for (bank in banks) {
@@ -382,6 +385,13 @@ class Backup(
         }
         for (goal in goals) {
             goalRepository.delete(goal)
+        }
+
+        for (transactionCategory in transactionsCategories) {
+            transactionCategoryRepository.delete(transactionCategory)
+        }
+        for (eventCategory in eventCategories) {
+            eventCategoryRepository.delete(eventCategory)
         }
     }
 

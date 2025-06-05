@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.agenda.ui.Theme
+import com.example.agenda.ui.screens.Profile
 import com.example.agenda.ui.screens.Transactions
 import com.example.agenda.ui.system.Navigation
 
@@ -248,6 +249,7 @@ object Structure {
 
                     }
                     IconButton(onClick = {
+                        Navigation.navController.navigate(Profile.Route())
                     }) {
                         Icon(Icons.Default.AccountCircle, contentDescription = "Conta")
                     }

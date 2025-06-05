@@ -17,6 +17,7 @@ import com.example.agenda.ui.screens.Banks
 import com.example.agenda.ui.screens.EventCategories
 import com.example.agenda.ui.screens.Goals
 import com.example.agenda.ui.screens.Home
+import com.example.agenda.ui.screens.Profile
 import com.example.agenda.ui.screens.SingleBank
 import com.example.agenda.ui.screens.SingleDay
 import com.example.agenda.ui.screens.SingleGoal
@@ -122,6 +123,8 @@ object Navigation {
                 )
             }
 
+            composable<Profile.Route>
+            { Profile.Screen() }
             composable<EventCategories.Screens.AllEventCategories.Route>
             { EventCategories.Screens.AllEventCategories.Screen() }
             composable<EventCategories.Screens.SingleEventCategory.Route>
